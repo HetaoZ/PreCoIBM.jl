@@ -10,9 +10,16 @@ using MathKits
 const MK = MathKits
 using PointInPoly
 using FVM
-export Fluid, Cell, fill_fluid!, fvm_set_bounds!, after_shock
+fvm_save_to_vtk = FVM.save_to_vtk
+fvm_set_bounds! = FVM.set_bounds!
+export Fluid, Cell, fill_fluid!, fvm_set_bounds!, after_shock, fvm_save_to_vtk
 using LEFEM
-export read_lefem_model, review, set_cons_dof!, fetch_data
+lefem_read_model = LEFEM.read_model
+lefem_review = LEFEM.review
+lefem_set_cons_dof! = LEFEM.set_cons_dof!
+lefem_fetch_data = LEFEM.fetch_data
+lefem_save_to_vtk = LEFEM.save_to_vtk
+export lefem_read_model, lefem_review, lefem_set_cons_dof!, lefem_fetch_data, lefem_save_to_vtk
 
 # -------------------------------------------------
 # constants
@@ -37,7 +44,7 @@ include("base.jl")
 export ImModel
 include("immerse.jl")
 include("solver.jl")
-export ibm_advance!
+export coupled_advance!, coupled_time_step!
 include("utils.jl")
 include("force.jl")
 include("exclude.jl")

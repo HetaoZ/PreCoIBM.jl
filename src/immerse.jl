@@ -6,7 +6,7 @@ function immerse!(f::Fluid, s::Structure)
 end
 
 function clear_fluid!(f, impoly)
-    xs = fetch_poly_x(impoly, f.dim)
+    xs = fetch_poly_x(impoly, f.dim) 
     imin, imax = get_region!(f, xs, extra_width = 2)
     @sync for pid in workers()
         @spawnat pid begin
@@ -55,11 +55,11 @@ function fetch_poly_x(impoly, dim)
 end 
 
 function get_region!(f::Fluid, xs::Array{Float64}; extra_width::Int = 0)
-    xmin = xs[:,1]
+    xmin = xs[1,:]
     xmax = copy(xmin)
-    for k = 2:size(xs,2)
-        xmin = min.(xmin, xs[:,k])
-        xmax = max.(xmax, xs[:,k])
+    for k = 2:size(xs,1)
+        xmin = min.(xmin, xs[k,:])
+        xmax = max.(xmax, xs[k,:])
     end
     imin = FVM.get_point_LD!(xmin, f)
     imax = FVM.get_point_RU!(xmax, f)

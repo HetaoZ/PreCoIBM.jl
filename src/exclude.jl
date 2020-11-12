@@ -28,16 +28,16 @@ end
 
 function exclude_cell!(c, d, impoly, dt)
     particles = generate_particles!(c, d)
-    exclude_particles!(particles, impoly, dt, maximum(d), rect_radius(d), c.x)
+    exclude_particles!(particles, impoly, dt, maximum(d), MK.rect_radius(d), c.x)
     return particles
 end
 
 function generate_particles!(c, d)
     cnp = ones(Int,length(c.x))*FVM.NP
     x = get_particle_position(c.x, d, cnp)
-    npa = MK.product(cnp)
+    npa = prod(cnp)
 
-    V_bar = MK.product(d) / npa
+    V_bar = prod(d) / npa
     cdim = length(c.u)
     if cdim == 1
         r_bar = V_bar * 0.5
@@ -82,16 +82,6 @@ function get_particle_position(x, d, np)
     return xp   
 end
 
-function rect_radius(d::Vector{Float64})
-    if length(d) == 1
-        return 0.5 * d[1]
-    elseif length(d) == 2
-        return sqrt(d[1] * d[2] / pi)
-    else
-        error("undef dim")
-    end 
-end
-
 function exclude_particles!(particles, impoly, dt, h, R, x)
     for p in particles
         convex = find_nearest_convex!(p.x, impoly)[2]
@@ -133,7 +123,7 @@ function root_on_convex(x::Vector{Float64}, convex)
 end
 
 function remap_to_fluid!(f, impoly, dt)
-    V = MK.product(f.d)
+    V = prod(f.d)
     h = maximum(f.d)
     xs = fetch_poly_x(impoly, f.dim)
 

@@ -109,9 +109,9 @@ end
 function generate_particles!(c::Cell, d::Vector{Float64}, s::Structure)
     cnp = ones(Int,length(c.x))*GF.NP
     x = get_particle_position(c.x, d, cnp)
-    npa = MK.product(cnp)
+    npa = prod(cnp)
 
-    V_bar = MK.product(d) / npa
+    V_bar = prod(d) / npa
     cdim = length(c.u)
     if cdim == 1
         r_bar = V_bar * 0.5
@@ -170,7 +170,7 @@ function remap_particle_to_cell!(p::GF.Particle, c::Cell, constants::Dict, V::Fl
 end
 
 function testremap_particle_to_cell!(p::GF.Particle, c::Cell, constants::Dict, d::Vector{Float64}, ub::Vector{Float64}, n::Vector{Float64}, dt::Float64, force::Vector{Float64}, h::Float64)
-    V = MK.product(d)
+    V = prod(d)
     # 注意更新顺序
     # 旧的密度和速度
     rho_old = c.rho
@@ -256,7 +256,7 @@ function remap_to_fluid!(f::Fluid, s::Structure, dt::Float64)
     # println("-- remap_to_fluid: 0 --")
     # display(f.particles)
 
-    V = MK.product(f.d)
+    V = prod(f.d)
     h = maximum(f.d)
 
     # 因为循环体里包含远程调用。

@@ -1,4 +1,4 @@
-function ibm_advance!(m::ImModel, dt)
+function coupled_advance!(m::ImModel, dt)
     if m.ims.s.movable
         fk = copy!(m.f)
         sk = deepcopy(m.ims.s)
@@ -9,7 +9,7 @@ function ibm_advance!(m::ImModel, dt)
             # predict
             # ----------------
             fk1 = copy!(m.f)
-            fvm_advance!(fk1, dt)
+            FVM.advance!(fk1, dt)
 
             sk1 = deepcopy(m.ims.s)
             sk1.ext_f = zeros(Float64, size(sk1.ext_f))
@@ -17,7 +17,7 @@ function ibm_advance!(m::ImModel, dt)
             # force to solid
             force_of_pressure_to_solid!(fk, sk1)
 
-            lefem_advance!(sk1, dt, "explicit")
+            LEFEM.advance!(sk1, dt, "explicit")
 
             # ----------------
             # correct
@@ -60,3 +60,19 @@ function ibm_advance!(m::ImModel, dt)
     end
 end
 
+function coupled_time_step!(f::Fluid, s::Structure; CFL::Float64 = 0.5 )
+    dtf = FVM.time_step!(f, CFL = CFL)
+    dts = LEFEM.time_step!(s)
+    if s.movable
+        dtc = time_step!(f, s)
+    else
+        dtc = Inf
+    end
+    # println("-- coupled_prod: 1 --")
+    # println([dtf, dts, dtc])
+    return minimum([dtf, dts, dtc])
+end
+
+function time_step!(f::Fluid, s::Structure)
+     return minimum(f.d) * BOUNDARY_STEP_LIMIT/ maximum(abs.(fetch_data(s, :u)))
+end
