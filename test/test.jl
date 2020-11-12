@@ -61,13 +61,11 @@ time = 0
 fvm_save_to_vtk(m.f, ["rho"], [:rho], "out/fluid_"*string(frame))
 println(frame, "  ", 0)
 
-# while frame < 2 && time < 1.e-3
-#     dt = coupled_time_step!(m.f, m.ims.s, CFL = 0.3)
-#     coupled_advance!(m, dt)
-#     global frame += 1
-#     global time += dt
-#     fvm_save_to_vtk(m.f, ["rho"], [:rho], "out/fluid_"*string(frame))
-#     println(frame, "  ", dt)
-# end
-
-# @time solve!(f, s, CFL = 0.5, maxtime = 0.26, maxframe = 2, cutframe = 1, varname = "p", filepath = "outputdata/", draw = true, figpath = "outputfig/", plotdim = "2D")
+while frame < 2 && time < 1.e-3
+    dt = coupled_time_step!(m.f, m.ims.s, CFL = 0.3)
+    coupled_advance!(m, dt)
+    global frame += 1
+    global time += dt
+    fvm_save_to_vtk(m.f, ["rho"], [:rho], "out/fluid_"*string(frame))
+    println(frame, "  ", dt)
+end
