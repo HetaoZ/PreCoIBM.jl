@@ -147,6 +147,3 @@ function get_nearest_IB!(x::Vector{Float64}, edge::Array{IB})
     p = sortperm(d)
     return p[1], edge[p[1]]
 end
-
-
-

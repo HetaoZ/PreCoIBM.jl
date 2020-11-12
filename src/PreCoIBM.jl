@@ -40,6 +40,7 @@ include("solver.jl")
 export ibm_advance!
 include("utils.jl")
 include("force.jl")
+include("exclude.jl")
 
 ###
 end

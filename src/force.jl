@@ -62,7 +62,7 @@ function cell_force_on_convex!(c::Cell, normal::Vector{Float64}, ub::Vector{Floa
 end
 
 function get_convex_speed!(x::Vector{Float64}, c::ImConvex)
-    ratio = get_ratio_on_convex(x, c)
+    ratio = get_ratio_on_convex!(x, c)
     if length(c.nodes) == 1
         u_new = c.nodes[1].u
     elseif length(c.nodes) == 2
@@ -73,7 +73,7 @@ function get_convex_speed!(x::Vector{Float64}, c::ImConvex)
     return u_new
 end
 
-function get_ratio_on_convex(x::Vector{Float64}, c::ImConvex)
+function get_ratio_on_convex!(x::Vector{Float64}, c::ImConvex)
     if length(c.nodes) == 1
         return 1.0
     elseif length(c.nodes) == 2
