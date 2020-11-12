@@ -22,10 +22,10 @@ f.consider_vis_item = false
 c1 = Cell(2, rho = 1., u = [0., 0.], p = 1.)
 fill_fluid!(f, c1)
 
-rho2, p2, u2 = after_shock(c1.p,c1.rho,c1.u[1],1.21,f.constants["gamma"],1)
+# rho2, p2, u2 = after_shock(c1.p,c1.rho,c1.u[1],1.21,f.constants["gamma"],1)
 
-c2 = Cell(2, rho = rho2, u = [u2, 0.], p = p2)
-fill_fluid!(f, c2, [-10e-3, 0.], [0., 65e-3])
+# c2 = Cell(2, rho = rho2, u = [u2, 0.], p = p2)
+# fill_fluid!(f, c2, [-10e-3, 0.], [0., 65e-3])
 
 fvm_set_bounds!(f, ["free" "refl"; "refl" "refl"])
 
@@ -36,10 +36,10 @@ f.exclude_particles = 1
 # --------------------------------
 
 # read model
-s = read_model("Tri3", "pstrain", "in/plate.msh", "in/steel.para")
+s = read_lefem_model("Tri3", "pstrain", "in/plate.msh", "in/steel.para")
 
 # constrain
-# set_cons_dof!(s, [1,3,5,7], [0.2,-0.2,-0.1,0.1])
+set_cons_dof!(s, [i for i=1:8], [0 for i=1:8])
 
 # --------------------------------
 # assemble model

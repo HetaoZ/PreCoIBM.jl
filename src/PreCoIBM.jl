@@ -3,14 +3,16 @@ Predict-Correct Immersed Boundary Method
 """
 module PreCoIBM
 # -------------------------------------------------
-using FVM, LEFEM, MathKits, PointInPoly
-using Printf, LinearAlgebra, Statistics
 using PyPlot
-using DelimitedFiles, Distributed, DistributedArrays
-const MK = MathKits
+using DelimitedFiles, Distributed, DistributedArrays, Printf, LinearAlgebra, Statistics
 
+using MathKits
+const MK = MathKits
+using PointInPoly
+using FVM
 export Fluid, Cell, fill_fluid!, fvm_set_bounds!, after_shock
-export read_model, review, set_cons_dof!, fetch_data
+using LEFEM
+export read_lefem_model, review, set_cons_dof!, fetch_data
 
 # -------------------------------------------------
 # constants

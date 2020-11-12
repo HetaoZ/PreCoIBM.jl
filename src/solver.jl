@@ -27,7 +27,7 @@ function ibm_advance!(m::ImModel, dt)
 
             if m.f.exclude_particles
                 if ITER_SCHEME == "GS"
-                    # exclude_fluid_particles!(fk1, impolyk1, dt)
+                    exclude_fluid_particles!(fk1, impolyk1, dt)
                 elseif ITER_SCHEME == "J"
                     # exclude_fluid_particles!(fk1, impolyk, dt)
                 else
