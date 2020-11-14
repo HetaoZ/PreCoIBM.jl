@@ -9,7 +9,7 @@ function force_of_pressure_to_solid!(f::Fluid, s::Structure)
         for c in impoly
             point = c.nodes[1].x
             ip = FVM.get_point_located_cell!(point, f)
-            ipa = get_target_appropriate!(ip, f, Int.(sign.(c.n)), xs)
+            ipa = get_target_appropriate!(ip, f.cells[Tuple(ip)...].x, f.d, Int.(sign.(c.n)), xs)
             force = cell_force_on_convex!(f.cells[Tuple(ipa)...], c.n, c.nodes[1].u)
 
             s.ext_f[f.dim*(c.nodes[1].id-1)+1:f.dim*c.nodes[1].id] += force
@@ -21,7 +21,7 @@ function force_of_pressure_to_solid!(f::Fluid, s::Structure)
             for k = 1:NGP_SURFACE
                 point = (1 - gp[k]) * c.nodes[1].x + gp[k] * c.nodes[2].x
                 ip = FVM.get_point_located_cell!(point, f)
-                ipa = get_target_appropriate!(ip, f, Int.(sign.(c.n)), xs)
+                ipa = get_target_appropriate!(ip, f.cells[Tuple(ip)...].x, f.d, Int.(sign.(c.n)), xs)
                 cell = f.cells[Tuple(ipa)...]
                 cell_force = cell_force_on_convex!(cell, c.n, get_convex_speed!(cell.x, c))
                 force[1] += cell_force * L * gpw[k] * (1 - gp[k])
@@ -36,18 +36,30 @@ function force_of_pressure_to_solid!(f::Fluid, s::Structure)
     end    
 end
 
-function get_target_appropriate!(ip::Vector{Int}, f::Fluid, xdir::Vector{Int}, xs::Array{Float64})
-
-    if pinpoly(xs, f.cells[Tuple(ip)...].x) == 0
+function get_target_appropriate!(ip, px, d, xdir, xs)
+    if pinpoly(xs, px) != 1
         return ip
-    elseif pinpoly(xs, f.cells[Tuple(ip+xdir)...].x) == 0
-        return ip+xdir
+    elseif pinpoly(xs, px + xdir .* d) != 1
+        return ip + xdir
     else
-        println("-- ERROR INFO --")
-        println("target cell = ", f.cells[Tuple(ip)...])
-        println("ip = ", ip)
-        println("xdir = ", xdir)
-        error("no appropriate target")
+        try
+            A = Array{Vector{Int}}(undef,Tuple([3 for i=1:length(px)]))
+            for i in CartesianIndices(A)
+                A[i] = [i[k]-2 for k=1:length(px)]
+            end
+            for xdir in A
+                if pinpoly(xs, px + xdir .* d) != 1
+                    return ip + xdir
+                end
+            end
+            error("No appropriate cell was found.")
+        catch
+            println("-- ERROR INFO --")
+            println("target x = ", px)
+            println("ip = ", ip)
+            println("xdir = ", xdir)
+            error("no appropriate target")
+        end
     end
 end
 

@@ -3,7 +3,7 @@ function coupled_advance!(m::ImModel, dt)
         fk = copy!(m.f)
         sk = deepcopy(m.ims.s)
 
-        kmax = 2
+        kmax = 10
         for k = 1:kmax
             # ----------------
             # predict
@@ -17,7 +17,7 @@ function coupled_advance!(m::ImModel, dt)
             # force to solid
             force_of_pressure_to_solid!(fk, sk1)
 
-            LEFEM.advance!(sk1, dt, "explicit")
+            LEFEM.advance!(sk1, dt, "newmark")
 
             # ----------------
             # correct
@@ -29,7 +29,7 @@ function coupled_advance!(m::ImModel, dt)
                 if ITER_SCHEME == "GS"
                     exclude_fluid!(fk1, impolyk1, dt)
                 elseif ITER_SCHEME == "J"
-                    # exclude_fluid_particles!(fk1, impolyk, dt)
+                    exclude_fluid_particles!(fk1, impolyk, dt)
                 else
                     error("undef ITER_SCHEME")
                 end
@@ -40,7 +40,12 @@ function coupled_advance!(m::ImModel, dt)
             # ----------------
             err = structure_err!(sk, sk1)/minimum(m.f.d)
 
-            println("k = ", k,"  err = ", err)
+            # println("k = ", k,"  err = ", err)
+
+            # println("fk1 = ")
+            # FVM.showfield!(fk1.cells,"rho",13:20,53:56)
+            
+
             if err < ERR_TOLERANCE || k == kmax
                 m.f = fk1
                 m.ims.s = sk1
@@ -62,7 +67,8 @@ end
 
 function coupled_time_step!(f::Fluid, s::Structure; CFL::Float64 = 0.5 )
     dtf = FVM.time_step!(f, CFL = CFL)
-    dts = LEFEM.time_step!(s)
+    # dts = LEFEM.time_step!(s)
+    dts = Inf # Newmark
     if s.movable
         dtc = time_step!(f, s)
     else

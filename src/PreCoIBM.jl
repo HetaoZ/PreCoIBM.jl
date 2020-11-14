@@ -16,10 +16,11 @@ export Fluid, Cell, fill_fluid!, fvm_set_bounds!, after_shock, fvm_save_to_vtk
 using LEFEM
 lefem_read_model = LEFEM.read_model
 lefem_review = LEFEM.review
-lefem_set_cons_dof! = LEFEM.set_cons_dof!
+lefem_cons_dof! = LEFEM.cons_dof!
+lefem_cons_dof_in_box! = LEFEM.cons_dof_in_box!
 lefem_fetch_data = LEFEM.fetch_data
 lefem_save_to_vtk = LEFEM.save_to_vtk
-export lefem_read_model, lefem_review, lefem_set_cons_dof!, lefem_fetch_data, lefem_save_to_vtk
+export lefem_read_model, lefem_review, lefem_cons_dof!, lefem_cons_dof_in_box!, lefem_fetch_data, lefem_save_to_vtk
 
 # -------------------------------------------------
 # constants
@@ -39,7 +40,6 @@ const NGP_SURFACE = 3
 # union class
 Structure = Union{LEStructure}
 
-# "从s中提取信息，创建一个独立结构ipoly = Vector{IConvex}，IConvex带有独立的nodes，这样就简单很多。"
 include("base.jl")
 export ImModel
 include("immerse.jl")

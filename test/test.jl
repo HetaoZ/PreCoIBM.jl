@@ -35,7 +35,7 @@ fill_fluid!(f, c2, [-10e-3, 0.], [0., 65e-3])
 
 fvm_set_bounds!(f, ["free" "refl"; "refl" "refl"])
 
-f.exclude_particles = 1
+f.exclude_particles = false
 
 # --------------------------------
 # define solids
@@ -45,7 +45,7 @@ f.exclude_particles = 1
 s = lefem_read_model("Tri3", "pstrain", "in/plate.msh", "in/steel.para")
 
 # constrain
-lefem_set_cons_dof!(s, [i for i=1:8], [0 for i=1:8])
+lefem_cons_dof_in_box!(s, [-1,-1e-7], [1,1e-7])
 
 # --------------------------------
 # assemble model
@@ -57,15 +57,18 @@ m = ImModel(f, s)
 # --------------------------------
 frame = 0
 time = 0
+N = 1000000
 
-fvm_save_to_vtk(m.f, ["rho"], [:rho], "out/fluid_"*string(frame))
-println(frame, "  ", 0)
+fvm_save_to_vtk(m.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
 
-while frame < 2 && time < 1.e-3
+while frame < 100 && time < 1.e-3
+    global m, frame, time
     dt = coupled_time_step!(m.f, m.ims.s, CFL = 0.3)
     coupled_advance!(m, dt)
-    global frame += 1
-    global time += dt
-    fvm_save_to_vtk(m.f, ["rho"], [:rho], "out/fluid_"*string(frame))
-    println(frame, "  ", dt)
+    frame += 1
+    time += dt
+    if frame%1 == 0
+        fvm_save_to_vtk(m.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
+        println(frame, "  ", dt)
+    end
 end

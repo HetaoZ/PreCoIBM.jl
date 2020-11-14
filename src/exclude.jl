@@ -87,7 +87,7 @@ function exclude_particles!(particles, impoly, dt, h, R, x)
         convex = find_nearest_convex!(p.x, impoly)[2]
         ratio = get_ratio_on_convex!(p.x, convex)
 
-        p.dx = root_on_convex(p.x, convex) + R * convex.n - x
+        p.dx = root_on_convex(p.x, convex) -x #+ R * convex.n
         p.x += p.dx
     end
 end
@@ -130,7 +130,14 @@ function remap_to_fluid!(f, impoly, dt)
     @sync for particle in f.particles
         ip = FVM.get_point_located_cell!(particle.x, f)
         convex = find_nearest_convex!(particle.x, impoly)[2]
-        ipa = get_target_appropriate!(ip, f, Int.(sign.(convex.n)), xs)
+        try
+            f.cells[Tuple(ip)...].x
+        catch
+            println("point = ", particle.x)
+            println("ip = ",ip)
+            println("convex = ",convex)
+        end
+        ipa = get_target_appropriate!(ip, f.cells[Tuple(ip)...].x, f.d, Int.(sign.(convex.n)), xs)
         
         pid = FVM.index_to_pid(ipa, nzone = f.nmesh .+ (f.ng * 2), dist = f.dist)
         
