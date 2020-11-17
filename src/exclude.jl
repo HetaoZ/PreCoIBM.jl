@@ -127,16 +127,19 @@ function remap_to_fluid!(f, impoly, dt)
     h = maximum(f.d)
     xs = fetch_poly_x(impoly, f.dim)
 
-    @sync for particle in f.particles
+    println("number of particles = ", length(f.particles))
+
+    println("-- remap_to_fluid: 1 --")
+    @time @sync @distributed for particle in f.particles
         ip = FVM.get_point_located_cell!(particle.x, f)
         convex = find_nearest_convex!(particle.x, impoly)[2]
-        try
-            f.cells[Tuple(ip)...].x
-        catch
-            println("point = ", particle.x)
-            println("ip = ",ip)
-            println("convex = ",convex)
-        end
+        # try
+        #     f.cells[Tuple(ip)...].x
+        # catch
+        #     println("point = ", particle.x)
+        #     println("ip = ",ip)
+        #     println("convex = ",convex)
+        # end
         ipa = get_target_appropriate!(ip, f.cells[Tuple(ip)...].x, f.d, Int.(sign.(convex.n)), xs)
         
         pid = FVM.index_to_pid(ipa, nzone = f.nmesh .+ (f.ng * 2), dist = f.dist)
@@ -145,7 +148,7 @@ function remap_to_fluid!(f, impoly, dt)
 
         @spawnat pid begin
             remap_particle_to_cell!(particle, f.cells[Tuple(ipa)...], f.constants, V, ub, n, h)
-        end 
+        end
     end    
 end
 

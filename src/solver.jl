@@ -1,6 +1,6 @@
 function coupled_advance!(m::ImModel, dt)
     if m.ims.s.movable
-        fk = copy!(m.f)
+        fk = copyfluid!(m.f)
         sk = deepcopy(m.ims.s)
 
         kmax = 10
@@ -8,7 +8,7 @@ function coupled_advance!(m::ImModel, dt)
             # ----------------
             # predict
             # ----------------
-            fk1 = copy!(m.f)
+            fk1 = copyfluid!(m.f)
             FVM.advance!(fk1, dt)
 
             sk1 = deepcopy(m.ims.s)
@@ -29,11 +29,14 @@ function coupled_advance!(m::ImModel, dt)
                 if ITER_SCHEME == "GS"
                     exclude_fluid!(fk1, impolyk1, dt)
                 elseif ITER_SCHEME == "J"
-                    exclude_fluid_particles!(fk1, impolyk, dt)
+                    exclude_fluid!(fk1, impolyk, dt)
                 else
                     error("undef ITER_SCHEME")
                 end
-            end 
+            end
+
+            # This immerse!() eliminates spurious oscillations when exclude_particles = false.
+            immerse!(m) 
 
             # ----------------
             # assess
@@ -41,11 +44,7 @@ function coupled_advance!(m::ImModel, dt)
             err = structure_err!(sk, sk1)/minimum(m.f.d)
 
             # println("k = ", k,"  err = ", err)
-
-            # println("fk1 = ")
-            # FVM.showfield!(fk1.cells,"rho",13:20,53:56)
             
-
             if err < ERR_TOLERANCE || k == kmax
                 m.f = fk1
                 m.ims.s = sk1
@@ -57,12 +56,21 @@ function coupled_advance!(m::ImModel, dt)
             end
         end
     else
-        fvm_advance!(m.f, dt)
+        FVM.advance!(m.f, dt)
         if m.f.exclude_particles
-            # exclude_fluid_particles!(f, m.ims.impoly, dt)
+            exclude_fluid!(f, m.ims.impoly, dt)
         end     
+        immerse!(m) 
         return    
     end
+end
+
+function seperate_advance!(m::ImModel, dt)
+    FVM.advance!(m.f, dt)
+    if m.ims.s.movable
+        LEFEM.advance!(m.ims.s, dt, "newmark")
+    end
+    immerse!(m)
 end
 
 function coupled_time_step!(f::Fluid, s::Structure; CFL::Float64 = 0.5 )

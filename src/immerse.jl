@@ -5,6 +5,8 @@ function immerse!(f::Fluid, s::Structure)
     return f, ImStructure(s, impoly)
 end
 
+immerse!(m::ImModel) = clear_fluid!(m.f, fetch_poly(m.ims.s))
+
 function clear_fluid!(f, impoly)
     xs = fetch_poly_x(impoly, f.dim) 
     imin, imax = get_region!(f, xs, extra_width = 2)

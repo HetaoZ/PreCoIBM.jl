@@ -4,15 +4,22 @@ Predict-Correct Immersed Boundary Method
 module PreCoIBM
 # -------------------------------------------------
 using PyPlot
-using DelimitedFiles, Distributed, DistributedArrays, Printf, LinearAlgebra, Statistics
+using Distributed
+using DelimitedFiles, DistributedArrays, Printf, LinearAlgebra, Statistics
 
 using MathKits
 const MK = MathKits
 using PointInPoly
-using FVM
-fvm_save_to_vtk = FVM.save_to_vtk
-fvm_set_bounds! = FVM.set_bounds!
-export Fluid, Cell, fill_fluid!, fvm_set_bounds!, after_shock, fvm_save_to_vtk
+include("/home/hetao/Projects/JuliaProj/FVM.jl/FVM/src/FVM.jl")
+using .FVM
+export Fluid, Cell, fill_fluid!, after_shock
+fvm_save_to_vtk = FVM.save_to_vtk; export fvm_save_to_vtk
+fvm_save_mesh = FVM.save_mesh; export fvm_save_mesh
+fvm_save_to_txt = FVM.save_to_txt; export fvm_save_to_txt
+fvm_save_to_fig = FVM.save_to_fig; export fvm_save_to_fig
+fvm_set_bounds! = FVM.set_bounds!; export fvm_set_bounds!
+
+
 using LEFEM
 lefem_read_model = LEFEM.read_model
 lefem_review = LEFEM.review
@@ -44,7 +51,7 @@ include("base.jl")
 export ImModel
 include("immerse.jl")
 include("solver.jl")
-export coupled_advance!, coupled_time_step!
+export coupled_advance!, coupled_time_step!, seperate_advance!
 include("utils.jl")
 include("force.jl")
 include("exclude.jl")

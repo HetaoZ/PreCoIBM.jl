@@ -1,9 +1,11 @@
-lc = 0.001 ;
+lc = 0.00025 ;
+width = 0.001 ;
+height = 0.05 ;
 
 Point(1) = {0,0,0,lc};
-Point(2) = {0.005,0,0,lc};
-Point(3) = {0.005,0.05,0,lc};
-Point(4) = {0,0.05,0,lc};
+Point(2) = {width,0,0,lc};
+Point(3) = {width,height,0,lc};
+Point(4) = {0,height,0,lc};
 
 Line(5) = {1,2};
 Line(6) = {2,3};
