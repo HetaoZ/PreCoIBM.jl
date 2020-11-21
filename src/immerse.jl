@@ -2,10 +2,10 @@
 function immerse!(f::Fluid, s::Structure)
     impoly = fetch_poly(s)
     clear_fluid!(f, impoly)
-    return f, ImStructure(s, impoly)
+    return ImFluid(f), ImStructure(s, impoly)
 end
 
-immerse!(m::ImModel) = clear_fluid!(m.f, fetch_poly(m.ims.s))
+immerse!(m::ImModel) = clear_fluid!(m.imf.f, fetch_poly(m.ims.s))
 
 function clear_fluid!(f, impoly)
     xs = fetch_poly_x(impoly, f.dim) 

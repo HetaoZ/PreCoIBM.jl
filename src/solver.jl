@@ -1,6 +1,6 @@
 function coupled_advance!(m::ImModel, dt)
     if m.ims.s.movable
-        fk = copyfluid!(m.f)
+        fk = copyfluid!(m.imf.f)
         sk = deepcopy(m.ims.s)
 
         kmax = 10
@@ -8,7 +8,9 @@ function coupled_advance!(m::ImModel, dt)
             # ----------------
             # predict
             # ----------------
-            fk1 = copyfluid!(m.f)
+            fk1 = copyfluid!(m.imf.f)
+            # println("-- coupled_advance: 1.1 --")
+            # @time 
             FVM.advance!(fk1, dt)
 
             sk1 = deepcopy(m.ims.s)
@@ -25,7 +27,7 @@ function coupled_advance!(m::ImModel, dt)
             impolyk = fetch_poly(sk)
             impolyk1 = fetch_poly(sk1)
 
-            if m.f.exclude_particles
+            if m.imf.exclude
                 if ITER_SCHEME == "GS"
                     exclude_fluid!(fk1, impolyk1, dt)
                 elseif ITER_SCHEME == "J"
@@ -41,12 +43,12 @@ function coupled_advance!(m::ImModel, dt)
             # ----------------
             # assess
             # ----------------
-            err = structure_err!(sk, sk1)/minimum(m.f.d)
+            err = structure_err!(sk, sk1)/minimum(m.imf.f.d)
 
-            # println("k = ", k,"  err = ", err)
+            println("k = ", k,"  err = ", err)
             
             if err < ERR_TOLERANCE || k == kmax
-                m.f = fk1
+                m.imf.f = fk1
                 m.ims.s = sk1
                 m.ims.impoly = impolyk1
                 return
@@ -56,8 +58,8 @@ function coupled_advance!(m::ImModel, dt)
             end
         end
     else
-        FVM.advance!(m.f, dt)
-        if m.f.exclude_particles
+        FVM.advance!(m.imf.f, dt)
+        if m.imf.exclude
             exclude_fluid!(f, m.ims.impoly, dt)
         end     
         immerse!(m) 
@@ -66,7 +68,7 @@ function coupled_advance!(m::ImModel, dt)
 end
 
 function seperate_advance!(m::ImModel, dt)
-    FVM.advance!(m.f, dt)
+    FVM.advance!(m.imf.f, dt)
     if m.ims.s.movable
         LEFEM.advance!(m.ims.s, dt, "newmark")
     end

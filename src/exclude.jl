@@ -1,26 +1,27 @@
-function exclude_fluid!(f, impoly, dt)
+"""
+粒子的生命周期仅限于此函数内，所以ImFluid似乎不必要了。
+"""
+function exclude_fluid!(f::Fluid, impoly, dt)
     # reset particles
-    f.particles = FVM.Particle[]
+    particles = ImParticle[]
 
     xs = fetch_poly_x(impoly, f.dim)
 
-    @sync for pid in workers()
-        lp = @fetchfrom pid begin
-            localparticles = FVM.Particle[]
-            for c in localpart(f.cells)
-                if MK.between(c.x, f.point1, f.point2)
-                    if pinpoly(xs, c.x)==1 && c.rho > 0.
-                        append!(localparticles, exclude_cell!(c, f.d, impoly, dt))
-                    end
+    parray = [@spawnat pid begin
+        localparticles = ImParticle[]
+        for c in localpart(f.cells)
+            if MK.between(c.x, f.point1, f.point2)
+                if pinpoly(xs, c.x)==1 && c.rho > 0.
+                    append!(localparticles, exclude_cell!(c, f.d, impoly, dt))
                 end
             end
-            localparticles
         end
-        append!(f.particles, lp)
-    end
+        localparticles
+    end for pid in workers()]
+    particles = DArray(parray)
 
     # remap
-    remap_to_fluid!(f, impoly, dt)
+    remap_to_fluid!(f, particles, impoly, dt)
 
     # update fluid boundaries
     FVM.update_boundaries!(f)
@@ -33,37 +34,28 @@ function exclude_cell!(c, d, impoly, dt)
 end
 
 function generate_particles!(c, d)
-    cnp = ones(Int,length(c.x))*FVM.NP
+    cnp = ones(Int,length(c.x))*NUM_PARTICLE
     x = get_particle_position(c.x, d, cnp)
     npa = prod(cnp)
 
     V_bar = prod(d) / npa
     cdim = length(c.u)
-    if cdim == 1
-        r_bar = V_bar * 0.5
-    elseif cdim == 2
-        r_bar = sqrt(V_bar/pi)
-    else
-        error("undef dim")
-    end
     m_bar = c.rho * V_bar
     u_bar = copy(c.u)
     ek_bar = 0.5 * MK.norm2(c.u)
     e_bar = c.e
     E_bar = e_bar + ek_bar
 
-    particles = FVM.Particle[]
+    particles = ImParticle[]
     for i in 1:npa
-        par = FVM.Particle(cdim)
-        par.m = m_bar
+        par = ImParticle(cdim)
+        par.x = x[i]
         par.u = u_bar
+        par.m = m_bar
         par.ek = ek_bar
         par.e = e_bar
         par.E = E_bar
-        par.x = x[i]
         par.V = V_bar
-        par.r = r_bar
-
         push!(particles, par)
     end
 
@@ -122,34 +114,39 @@ function root_on_convex(x::Vector{Float64}, convex)
     return root
 end
 
-function remap_to_fluid!(f, impoly, dt)
+function remap_to_fluid!(f, particles, impoly, dt)
     V = prod(f.d)
     h = maximum(f.d)
     xs = fetch_poly_x(impoly, f.dim)
 
-    println("number of particles = ", length(f.particles))
+    # println("number of particles = ", length(particles))
 
-    println("-- remap_to_fluid: 1 --")
-    @time @sync @distributed for particle in f.particles
-        ip = FVM.get_point_located_cell!(particle.x, f)
-        convex = find_nearest_convex!(particle.x, impoly)[2]
-        # try
-        #     f.cells[Tuple(ip)...].x
-        # catch
-        #     println("point = ", particle.x)
-        #     println("ip = ",ip)
-        #     println("convex = ",convex)
-        # end
-        ipa = get_target_appropriate!(ip, f.cells[Tuple(ip)...].x, f.d, Int.(sign.(convex.n)), xs)
-        
-        pid = FVM.index_to_pid(ipa, nzone = f.nmesh .+ (f.ng * 2), dist = f.dist)
-        
-        ub, n = get_convex_speed_and_n!(f.cells[Tuple(ipa)...].x, impoly)
-
+    # println("-- remap_to_fluid: 1 --")
+    # @time 
+    @sync for pid in workers()
         @spawnat pid begin
-            remap_particle_to_cell!(particle, f.cells[Tuple(ipa)...], f.constants, V, ub, n, h)
+            for particle in localpart(particles)
+                ip = FVM.get_point_located_cell!(particle.x, f)
+                convex = find_nearest_convex!(particle.x, impoly)[2]
+                # try
+                #     f.cells[Tuple(ip)...].x
+                # catch
+                #     println("point = ", particle.x)
+                #     println("ip = ",ip)
+                #     println("convex = ",convex)
+                # end
+                ipa = get_target_appropriate!(ip, f.cells[Tuple(ip)...].x, f.d, Int.(sign.(convex.n)), xs)
+                
+                cpid = FVM.index_to_pid(ipa, nzone = f.nmesh .+ (f.ng * 2), dist = f.dist)
+                
+                ub, n = get_convex_speed_and_n!(f.cells[Tuple(ipa)...].x, impoly)
+        
+                @spawnat cpid begin
+                    remap_particle_to_cell!(particle, f.cells[Tuple(ipa)...], f.constants, V, ub, n, h)
+                end
+            end
         end
-    end    
+    end
 end
 
 function get_convex_speed_and_n!(x::Vector{Float64}, impoly)
@@ -166,7 +163,7 @@ function get_convex_speed_and_n!(x::Vector{Float64}, impoly)
     return u_new, convex.n
 end
 
-function remap_particle_to_cell!(p::FVM.Particle, c::Cell, constants::Dict, V::Float64, ub::Vector{Float64}, n::Vector{Float64}, h::Float64)
+function remap_particle_to_cell!(p::ImParticle, c::Cell, constants::Dict, V::Float64, ub::Vector{Float64}, n::Vector{Float64}, h::Float64)
     rho_old = c.rho
     u_old = copy(c.u)
     e_old = c.e

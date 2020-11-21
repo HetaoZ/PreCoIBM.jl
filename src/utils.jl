@@ -5,3 +5,15 @@ function structure_err!(s1, s2)
     # println("err = ",err)
     return err    
 end
+
+function copyimf!(imf::ImFluid)
+    return ImFluid(copyfluid!(imf.f), imf.particles, imf.exclude)
+end
+
+# function copyparticles!(p::Vector{ImParticle})
+#     a = Vector{ImParticle}(undef, length(p))
+#     for i in eachindex(a)
+#         a[i] = copyparticle!(p[i])
+#     end
+#     return a
+# end

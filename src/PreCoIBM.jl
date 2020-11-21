@@ -10,8 +10,8 @@ using DelimitedFiles, DistributedArrays, Printf, LinearAlgebra, Statistics
 using MathKits
 const MK = MathKits
 using PointInPoly
-include("/home/hetao/Projects/JuliaProj/FVM.jl/FVM/src/FVM.jl")
-using .FVM
+# include("/home/hetao/Projects/JuliaProj/FVM.jl/FVM/src/FVM.jl")
+using FVM
 export Fluid, Cell, fill_fluid!, after_shock
 fvm_save_to_vtk = FVM.save_to_vtk; export fvm_save_to_vtk
 fvm_save_mesh = FVM.save_mesh; export fvm_save_mesh
@@ -43,6 +43,7 @@ const GAUSS_POINT = Dict(
                          3 => ([0.11270166537925852, 0.5, 0.8872983346207415],  [0.277777777777778, 0.4444444444444445, 0.277777777777778])
                         )                                      
 const NGP_SURFACE = 3
+const NUM_PARTICLE = 2
 # -------------------------------------------------
 # union class
 Structure = Union{LEStructure}

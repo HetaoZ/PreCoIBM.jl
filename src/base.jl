@@ -35,15 +35,14 @@ ImParticle(dim::Int) = ImParticle(dim, zeros(Float64, dim), zeros(Float64,dim), 
 
 mutable struct ImFluid 
     f::Fluid
-    particles::DArray{ImParticle}
     exclude::Bool
 end
-ImFluid(f::Fluid) = ImFluid(f, distributed([ImParticle(1)]), true)
+ImFluid(f::Fluid) = ImFluid(f, true)
 
 mutable struct ImModel
-    f::Fluid
+    imf::ImFluid
     ims::ImStructure
     paras::Dict
 end
-ImModel(f, s::ImStructure) = ImModel(f, s, Dict())
-ImModel(f, s::Structure) = ImModel(immerse!(f, s)...)
+ImModel(f::ImFluid, s::ImStructure) = ImModel(f, s, Dict())
+ImModel(f::Fluid, s::Structure) = ImModel(immerse!(f, s)...)

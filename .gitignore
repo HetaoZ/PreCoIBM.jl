@@ -7,3 +7,5 @@
 *.vtu
 *.png
 *.txt
+*.so
+*.so*
