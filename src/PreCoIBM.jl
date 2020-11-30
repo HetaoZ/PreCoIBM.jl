@@ -10,24 +10,31 @@ using DelimitedFiles, DistributedArrays, Printf, LinearAlgebra, Statistics
 using MathKits
 const MK = MathKits
 using PointInPoly
-# include("/home/hetao/Projects/JuliaProj/FVM.jl/FVM/src/FVM.jl")
+
 using FVM
 export Fluid, Cell, fill_fluid!, after_shock
-fvm_save_to_vtk = FVM.save_to_vtk; export fvm_save_to_vtk
-fvm_save_mesh = FVM.save_mesh; export fvm_save_mesh
-fvm_save_to_txt = FVM.save_to_txt; export fvm_save_to_txt
-fvm_save_to_fig = FVM.save_to_fig; export fvm_save_to_fig
-fvm_set_bounds! = FVM.set_bounds!; export fvm_set_bounds!
-
+save_mesh = FVM.save_mesh; export save_mesh
+save_to_txt = FVM.save_to_txt; export save_to_txt
+save_to_fig = FVM.save_to_fig; export save_to_fig
+set_bounds! = FVM.set_bounds!; export set_bounds!
 
 using LEFEM
-lefem_read_model = LEFEM.read_model
-lefem_review = LEFEM.review
-lefem_cons_dof! = LEFEM.cons_dof!
-lefem_cons_dof_in_box! = LEFEM.cons_dof_in_box!
-lefem_fetch_data = LEFEM.fetch_data
-lefem_save_to_vtk = LEFEM.save_to_vtk
-export lefem_read_model, lefem_review, lefem_cons_dof!, lefem_cons_dof_in_box!, lefem_fetch_data, lefem_save_to_vtk
+read_model = LEFEM.read_model; export read_model
+review = LEFEM.review; export review
+cons_dof! = LEFEM.cons_dof!; export cons_dof!
+cons_dof_in_box! = LEFEM.cons_dof_in_box!; export cons_dof_in_box!
+
+include("/home/hetao/Projects/JuliaProj/Rigid.jl/Rigid/src/Rigid.jl")
+using .Rigid
+export create_rigid, set_fixed_u!, set_fixed_omega!
+
+fetch_data(s::LEStructure, field) = LEFEM.fetch_data(s, field)
+fetch_data(s::RigidStructure, field) = Rigid.fetch_data(s, field)
+export fetch_data
+
+save_to_vtk(s::LEStructure, datanames, fields, fname) = LEFEM.save_to_vtk(s, datanames, fields, fname)
+save_to_vtk(s::RigidStructure, datanames, fields, fname) = Rigid.save_to_vtk(s, datanames, fields, fname)
+export save_to_vtk
 
 # -------------------------------------------------
 # constants
@@ -46,7 +53,7 @@ const NGP_SURFACE = 3
 const NUM_PARTICLE = 2
 # -------------------------------------------------
 # union class
-Structure = Union{LEStructure}
+Structure = Union{LEStructure, RigidStructure}
 
 include("base.jl")
 export ImModel

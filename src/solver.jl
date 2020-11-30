@@ -45,7 +45,7 @@ function coupled_advance!(m::ImModel, dt)
             # ----------------
             err = structure_err!(sk, sk1)/minimum(m.imf.f.d)
 
-            println("k = ", k,"  err = ", err)
+            # println("k = ", k,"  err = ", err)
             
             if err < ERR_TOLERANCE || k == kmax
                 m.imf.f = fk1
@@ -58,9 +58,11 @@ function coupled_advance!(m::ImModel, dt)
             end
         end
     else
+        m.ims.s.ext_f = zeros(Float64, size(m.ims.s.ext_f))
+        force_of_pressure_to_solid!(m.imf.f, m.ims.s)
         FVM.advance!(m.imf.f, dt)
         if m.imf.exclude
-            exclude_fluid!(f, m.ims.impoly, dt)
+            exclude_fluid!(m.imf.f, m.ims.impoly, dt)
         end     
         immerse!(m) 
         return    
