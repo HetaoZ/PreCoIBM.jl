@@ -11,9 +11,6 @@ MathKits = "0aefbb3a-8f27-41be-8eac-0ff28e0d4a49"
 PointInPoly = "b33f1834-3304-4c26-96eb-60ff7015163d"
 Rigid = "a02216df-6561-4a50-88cf-6852979b54d1"
 
-[compat]
-julia = "1.5"
-
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
