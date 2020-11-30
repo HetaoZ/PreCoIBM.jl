@@ -10,29 +10,24 @@ using Printf
 using LinearAlgebra
 using Statistics
 
-include("/home/hetao/Projects/JuliaProj/PointInPoly.jl/PointInPoly/src/PointInPoly.jl")
-using .PointInPoly
+using PointInPoly
 
-include("/home/hetao/Projects/JuliaProj/Mathkits.jl/MathKits/src/MathKits.jl")
-using .MathKits
+using MathKits
 const MK = MathKits
 
-include("/home/hetao/Projects/JuliaProj/FVM.jl/FVM/src/FVM.jl")
-using .FVM
+using FVM
 export Fluid, Cell, fill_fluid!, after_shock
 save_fluid_mesh = FVM.save_fluid_mesh; export save_fluid_mesh
 # save_to_txt = FVM.save_to_txt; export save_to_txt
 # save_to_fig = FVM.save_to_fig; export save_to_fig
 set_bounds! = FVM.set_bounds!; export set_bounds!
 
-include("/home/hetao/Projects/JuliaProj/LEFEM.jl/LEFEM/src/LEFEM.jl")
-using .LEFEM
+using LEFEM
 read_model = LEFEM.read_model; export read_model
 cons_dof! = LEFEM.cons_dof!; export cons_dof!
 cons_dof_in_box! = LEFEM.cons_dof_in_box!; export cons_dof_in_box!
 
-include("/home/hetao/Projects/JuliaProj/Rigid.jl/Rigid/src/Rigid.jl")
-using .Rigid
+using Rigid
 export create_rigid, set_fixed_u!, set_fixed_omega!
 
 fetch_data(s::LEStructure, field) = LEFEM.fetch_data(s, field)
