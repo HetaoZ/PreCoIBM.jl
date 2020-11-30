@@ -106,3 +106,109 @@ PID   |  localindices
 
 1  1.5779301392869734e-7 End = [-5.838020536701509e-11, -1.1824635807708407e-10] F = (3715.896943658053, 0.0)t = 2020-11-30T16:37:12.655
 2  1.5400975825881662e-7 End = [7.573216182404708e-11, -3.086679311724298e-10] F = (3720.7473587300956, -95.14019474691477)t = 2020-11-30T16:37:27.489
+
+2020-11-30T17:12:23.312
+Opened 1 process(es) of PID [2]
+Modules were loaded successfully.
+-- short summary of Fluid --
+# parameters
+  mu : 1.0e-6
+  total_is_summed : false
+  Pr : 1.0
+  background_is_filled : true
+  flux_scheme : AUSM
+  consider_vis_item : false
+  U0 : 1
+  total_mass : 0.0
+  gamma : 1.4
+  reconst_scheme : MUSCL
+  L0 : 1
+# mesh
+  dimension : 2
+  domain : (-0.01, 0.0) -> (0.05, 0.065)
+  number of cells : 66464
+  size of cells : (248, 268)
+# distribution
+PID   |  localindices
+2        (1:248, 1:268)
+# boundaries
+  axis 1 : ("free", "free")
+  axis 2 : ("refl", "refl")
+# states
+  rho : [1.2, 1.630779226806516]
+  p : [101000.0, 155686.45]
+  u : [-0.0, 109.71829086299334]
+
+-- short summary of LEStructure --
+# parameters
+  nu : 0.3
+  damping coeff alpha : 0
+  thickness : 1
+  damping coeff beta : 0
+  damping : false
+  E : 2.2e11
+  rho : 7600
+# mesh
+  dimension : 2
+  number of nodes : 1171
+  number of elements : 966
+  element type : Quad4
+  problem type : pstrain
+# constrains
+  number of constrained dofs : 10
+
+1 2020-11-30T17:13:34.865  1.5779301392869734e-7 End = [-5.838020536701509e-11, -1.1824635807708407e-10] F = (3715.896943658053, 0.0)
+2 2020-11-30T17:13:55.089  1.5400975825881662e-7 End = [7.573216182404708e-11, -3.086679311724298e-10] F = (3720.7473587300956, -95.14019474691477)
+
+2020-11-30T17:14:28.628
+Opened 1 process(es) of PID [2]
+Modules were loaded successfully.
+-- short summary of Fluid --
+# parameters
+  mu : 1.0e-6
+  total_is_summed : false
+  Pr : 1.0
+  background_is_filled : true
+  flux_scheme : AUSM
+  consider_vis_item : false
+  U0 : 1
+  total_mass : 0.0
+  gamma : 1.4
+  reconst_scheme : MUSCL
+  L0 : 1
+# mesh
+  dimension : 2
+  domain : (-0.01, 0.0) -> (0.05, 0.065)
+  number of cells : 66464
+  size of cells : (248, 268)
+# distribution
+PID   |  localindices
+2        (1:248, 1:268)
+# boundaries
+  axis 1 : ("free", "free")
+  axis 2 : ("refl", "refl")
+# states
+  rho : [1.2, 1.630779226806516]
+  p : [101000.0, 155686.45]
+  u : [-0.0, 109.71829086299334]
+
+-- short summary of LEStructure --
+# parameters
+  nu : 0.3
+  damping coeff alpha : 0
+  thickness : 1
+  damping coeff beta : 0
+  damping : false
+  E : 2.2e11
+  rho : 7600
+# mesh
+  dimension : 2
+  number of nodes : 1171
+  number of elements : 966
+  element type : Quad4
+  problem type : pstrain
+# constrains
+  number of constrained dofs : 10
+
+1 2020-11-30T17:15:27.479  1.5779301392869734e-7 End = [-5.838020536701509e-11, -1.1824635807708407e-10] F = (3715.896943658053, 0.0)
+2 2020-11-30T17:15:42.969  1.5400975825881662e-7 End = [7.573216182404708e-11, -3.086679311724298e-10] F = (3720.7473587300956, -95.14019474691477)
