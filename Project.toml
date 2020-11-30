@@ -3,6 +3,14 @@ uuid = "b84ca5b2-187e-4f5f-807c-5006ae602a89"
 authors = ["Hetao Z."]
 version = "0.1.0"
 
+[deps]
+DistributedArrays = "aaf54ef3-cdf8-58ed-94cc-d582ad619b94"
+FVM = "642af85a-1a5f-42d5-b31d-7ad52e664d57"
+LEFEM = "bbb4a789-0fc6-4acc-8eae-7f825c1dd415"
+MathKits = "0aefbb3a-8f27-41be-8eac-0ff28e0d4a49"
+PointInPoly = "b33f1834-3304-4c26-96eb-60ff7015163d"
+Rigid = "a02216df-6561-4a50-88cf-6852979b54d1"
+
 [compat]
 julia = "1.5"
 
