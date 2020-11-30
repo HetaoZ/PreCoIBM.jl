@@ -8,8 +8,7 @@ using Distributed
 addprocs(nw - nprocs() + 1)
 println("Opened ", nworkers()," process(es) of PID ", workers())
 
-@everywhere include("/home/hetao/Projects/JuliaProj/PreCoIBM.jl/PreCoIBM/src/PreCoIBM.jl")
-@everywhere using .PreCoIBM
+@everywhere using PreCoIBM
 
 println("Modules were loaded successfully.")
 
