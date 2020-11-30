@@ -5,7 +5,6 @@ module PreCoIBM
 # -------------------------------------------------
 using FVM, LEFEM, MathKits, PointInPoly
 using Printf, LinearAlgebra, Statistics
-using PyPlot
 using DelimitedFiles, Distributed, DistributedArrays
 const MK = MathKits
 

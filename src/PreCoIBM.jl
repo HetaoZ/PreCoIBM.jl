@@ -3,24 +3,31 @@ Predict-Correct Immersed Boundary Method
 """
 module PreCoIBM
 # -------------------------------------------------
-using PyPlot
 using Distributed
-using DelimitedFiles, DistributedArrays, Printf, LinearAlgebra, Statistics
+using DelimitedFiles
+using DistributedArrays
+using Printf
+using LinearAlgebra
+using Statistics
 
-using MathKits
+include("/home/hetao/Projects/JuliaProj/PointInPoly.jl/PointInPoly/src/PointInPoly.jl")
+using .PointInPoly
+
+include("/home/hetao/Projects/JuliaProj/Mathkits.jl/MathKits/src/MathKits.jl")
+using .MathKits
 const MK = MathKits
-using PointInPoly
 
-using FVM
+include("/home/hetao/Projects/JuliaProj/FVM.jl/FVM/src/FVM.jl")
+using .FVM
 export Fluid, Cell, fill_fluid!, after_shock
-save_mesh = FVM.save_mesh; export save_mesh
-save_to_txt = FVM.save_to_txt; export save_to_txt
-save_to_fig = FVM.save_to_fig; export save_to_fig
+save_fluid_mesh = FVM.save_fluid_mesh; export save_fluid_mesh
+# save_to_txt = FVM.save_to_txt; export save_to_txt
+# save_to_fig = FVM.save_to_fig; export save_to_fig
 set_bounds! = FVM.set_bounds!; export set_bounds!
 
-using LEFEM
+include("/home/hetao/Projects/JuliaProj/LEFEM.jl/LEFEM/src/LEFEM.jl")
+using .LEFEM
 read_model = LEFEM.read_model; export read_model
-review = LEFEM.review; export review
 cons_dof! = LEFEM.cons_dof!; export cons_dof!
 cons_dof_in_box! = LEFEM.cons_dof_in_box!; export cons_dof_in_box!
 
@@ -32,9 +39,14 @@ fetch_data(s::LEStructure, field) = LEFEM.fetch_data(s, field)
 fetch_data(s::RigidStructure, field) = Rigid.fetch_data(s, field)
 export fetch_data
 
+save_to_vtk(f::Fluid, datanames, fields, fname) = FVM.save_to_vtk(f, datanames, fields, fname)
 save_to_vtk(s::LEStructure, datanames, fields, fname) = LEFEM.save_to_vtk(s, datanames, fields, fname)
 save_to_vtk(s::RigidStructure, datanames, fields, fname) = Rigid.save_to_vtk(s, datanames, fields, fname)
 export save_to_vtk
+
+review(f::Fluid) = FVM.review(f)
+review(s::LEStructure) = LEFEM.review(s)
+export review
 
 # -------------------------------------------------
 # constants
@@ -63,6 +75,8 @@ export coupled_advance!, coupled_time_step!, seperate_advance!
 include("utils.jl")
 include("force.jl")
 include("exclude.jl")
+include("io_post.jl")
+export save_time
 
 ###
 end

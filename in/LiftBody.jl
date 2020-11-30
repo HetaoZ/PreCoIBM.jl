@@ -61,7 +61,7 @@ cut = 10
 time = 0
 N = 1000000
 
-# fvm_save_to_vtk(m.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
+fvm_save_to_vtk(m.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
 # fvm_save_to_fig(m.imf.f, dataname = "rho", frame = frame, figpath = "outputfig/", levels = [0,2,10])
 
 # while frame < 10000 && time < 1
