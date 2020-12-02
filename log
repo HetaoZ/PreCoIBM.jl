@@ -1,0 +1,232 @@
+
+2020-11-30T23:12:20.869
+Opened 1 process(es) of PID [2]
+┌ Warning: Package PreCoIBM does not have Distributed in its dependencies:
+│ - If you have PreCoIBM checked out for development and have
+│   added Distributed as a dependency but haven't updated your primary
+│   environment's manifest file, try `Pkg.resolve()`.
+│ - Otherwise you may need to report an issue with PreCoIBM
+└ Loading Distributed into PreCoIBM from project dependency, future warnings for PreCoIBM are suppressed.
+┌ Warning: Package FVM does not have DUtils in its dependencies:
+│ - If you have FVM checked out for development and have
+│   added DUtils as a dependency but haven't updated your primary
+│   environment's manifest file, try `Pkg.resolve()`.
+│ - Otherwise you may need to report an issue with FVM
+└ Loading DUtils into FVM from project dependency, future warnings for FVM are suppressed.
+┌ Warning: Package Rigid does not have LinearAlgebra in its dependencies:
+│ - If you have Rigid checked out for development and have
+│   added LinearAlgebra as a dependency but haven't updated your primary
+│   environment's manifest file, try `Pkg.resolve()`.
+│ - Otherwise you may need to report an issue with Rigid
+└ Loading LinearAlgebra into Rigid from project dependency, future warnings for Rigid are suppressed.
+┌ Warning: The call to compilecache failed to create a usable precompiled cache file for PreCoIBM [b84ca5b2-187e-4f5f-807c-5006ae602a89]
+│   exception = Required dependency FVM [642af85a-1a5f-42d5-b31d-7ad52e664d57] failed to load from a cache file.
+└ @ Base loading.jl:1042
+┌ Warning: Package PreCoIBM does not have Distributed in its dependencies:
+│ - If you have PreCoIBM checked out for development and have
+│   added Distributed as a dependency but haven't updated your primary
+│   environment's manifest file, try `Pkg.resolve()`.
+│ - Otherwise you may need to report an issue with PreCoIBM
+└ Loading Distributed into PreCoIBM from project dependency, future warnings for PreCoIBM are suppressed.
+┌ Warning: Package FVM does not have DUtils in its dependencies:
+│ - If you have FVM checked out for development and have
+│   added DUtils as a dependency but haven't updated your primary
+│   environment's manifest file, try `Pkg.resolve()`.
+│ - Otherwise you may need to report an issue with FVM
+└ Loading DUtils into FVM from project dependency, future warnings for FVM are suppressed.
+┌ Warning: Package Rigid does not have LinearAlgebra in its dependencies:
+│ - If you have Rigid checked out for development and have
+│   added LinearAlgebra as a dependency but haven't updated your primary
+│   environment's manifest file, try `Pkg.resolve()`.
+│ - Otherwise you may need to report an issue with Rigid
+└ Loading LinearAlgebra into Rigid from project dependency, future warnings for Rigid are suppressed.
+      From worker 2:    ┌ Warning: Package PreCoIBM does not have Distributed in its dependencies:
+      From worker 2:    │ - If you have PreCoIBM checked out for development and have
+      From worker 2:    │   added Distributed as a dependency but haven't updated your primary
+      From worker 2:    │   environment's manifest file, try `Pkg.resolve()`.
+      From worker 2:    │ - Otherwise you may need to report an issue with PreCoIBM
+      From worker 2:    └ Loading Distributed into PreCoIBM from project dependency, future warnings for PreCoIBM are suppressed.
+      From worker 2:    ┌ Warning: Package FVM does not have DUtils in its dependencies:
+      From worker 2:    │ - If you have FVM checked out for development and have
+      From worker 2:    │   added DUtils as a dependency but haven't updated your primary
+      From worker 2:    │   environment's manifest file, try `Pkg.resolve()`.
+      From worker 2:    │ - Otherwise you may need to report an issue with FVM
+      From worker 2:    └ Loading DUtils into FVM from project dependency, future warnings for FVM are suppressed.
+      From worker 2:    ┌ Warning: Package Rigid does not have LinearAlgebra in its dependencies:
+      From worker 2:    │ - If you have Rigid checked out for development and have
+      From worker 2:    │   added LinearAlgebra as a dependency but haven't updated your primary
+      From worker 2:    │   environment's manifest file, try `Pkg.resolve()`.
+      From worker 2:    │ - Otherwise you may need to report an issue with Rigid
+      From worker 2:    └ Loading LinearAlgebra into Rigid from project dependency, future warnings for Rigid are suppressed.
+┌ Warning: The call to compilecache failed to create a usable precompiled cache file for PreCoIBM [b84ca5b2-187e-4f5f-807c-5006ae602a89]
+│   exception = Required dependency FVM [642af85a-1a5f-42d5-b31d-7ad52e664d57] failed to load from a cache file.
+└ @ Base loading.jl:1042
+┌ Warning: Package PreCoIBM does not have Distributed in its dependencies:
+│ - If you have PreCoIBM checked out for development and have
+│   added Distributed as a dependency but haven't updated your primary
+│   environment's manifest file, try `Pkg.resolve()`.
+│ - Otherwise you may need to report an issue with PreCoIBM
+└ Loading Distributed into PreCoIBM from project dependency, future warnings for PreCoIBM are suppressed.
+      From worker 2:    ┌ Warning: Package FVM does not have DUtils in its dependencies:
+      From worker 2:    │ - If you have FVM checked out for development and have                                                                                                                                     
+      From worker 2:    │   added DUtils as a dependency but haven't updated your primary                                                                                                                            
+      From worker 2:    │   environment's manifest file, try `Pkg.resolve()`.                                                                                                                                        
+      From worker 2:    │ - Otherwise you may need to report an issue with FVM                                                                                                                                       
+      From worker 2:    └ Loading DUtils into FVM from project dependency, future warnings for FVM are suppressed.                                                                                                   
+      From worker 2:    ┌ Warning: Package Rigid does not have LinearAlgebra in its dependencies:                                                                                                                    
+      From worker 2:    │ - If you have Rigid checked out for development and have                                                                                                                                   
+      From worker 2:    │   added LinearAlgebra as a dependency but haven't updated your primary                                                                                                                     
+      From worker 2:    │   environment's manifest file, try `Pkg.resolve()`.                                                                                                                                        
+      From worker 2:    │ - Otherwise you may need to report an issue with Rigid                                                                                                                                     
+      From worker 2:    └ Loading LinearAlgebra into Rigid from project dependency, future warnings for Rigid are suppressed.                                                                                        
+Modules were loaded successfully.                                                                                                                                                                                    
+-- short summary of Fluid --                                                                                                                                                                                         
+# parameters                                                                                                                                                                                                         
+  mu : 1.0e-6                                                                                                                                                                                                        
+  total_is_summed : false                                                                                                                                                                                            
+  Pr : 1.0                                                                                                                                                                                                           
+  background_is_filled : true                                                                                                                                                                                        
+  flux_scheme : AUSM                                                                                                                                                                                                 
+  consider_vis_item : false                                                                                                                                                                                          
+  U0 : 1                                                                                                                                                                                                             
+  total_mass : 0.0                                                                                                                                                                                                   
+  gamma : 1.4                                                                                                                                                                                                        
+  reconst_scheme : MUSCL                                                                                                                                                                                             
+  L0 : 1                                                                                                                                                                                                             
+# mesh                                                                                                                                                                                                               
+  dimension : 2                                                                                                                                                                                                      
+  domain : (-0.01, 0.0) -> (0.05, 0.065)                                                                                                                                                                             
+  number of cells : 66464
+  size of cells : (248, 268)
+# distribution
+PID   |  localindices
+2        (1:248, 1:268)
+# boundaries
+  axis 1 : ("free", "free")
+  axis 2 : ("refl", "refl")
+# states
+  rho : [1.2, 1.630779226806516]
+  p : [101000.0, 155686.45]
+  u : [-0.0, 109.71829086299334]
+
+-- short summary of LEStructure --
+# parameters
+  nu : 0.3
+  damping coeff alpha : 0
+  thickness : 1
+  damping coeff beta : 0
+  damping : false
+  E : 2.2e11
+  rho : 7600
+# mesh
+  dimension : 2
+  number of nodes : 1171
+  number of elements : 966
+  element type : Quad4
+  problem type : pstrain
+# constrains
+  number of constrained dofs : 10
+
+50 2020-11-30T23:36:24.141  1.2290068116223244e-7 End = [2.304143580216619e-7, -9.48519247137365e-9] F = (4376.600304369762, -132.8753649254265)
+100 2020-12-01T00:00:00.612  1.1342396730657973e-7 End = [8.424990260143749e-7, -2.0577087707772102e-8] F = (4365.43177924884, -130.35885654459452)
+150 2020-12-01T00:23:37.477  1.0592478325945416e-7 End = [1.7720268626822253e-6, -3.251688812002023e-8] F = (4360.408940992553, -126.199094025461)
+200 2020-12-01T00:47:15.315  9.956059521350047e-8 End = [2.968626923988402e-6, -3.332640312346183e-8] F = (4352.965831381289, -120.4140723896054)
+250 2020-12-01T01:10:52.542  9.590671247220397e-8 End = [4.395512327919651e-6, -2.2974461454104993e-8] F = (4353.06918538577, -117.10486765123171)
+300 2020-12-01T01:34:27.538  9.478746360311516e-8 End = [6.145739697001254e-6, -3.5381424663075616e-8] F = (4347.838899498973, -110.20831623464451)
+350 2020-12-01T01:58:03.236  9.343894964648483e-8 End = [8.027034498145476e-6, -2.5314638597716273e-8] F = (4341.729475062978, -106.40007013160425)
+400 2020-12-01T02:21:40.901  9.242370660982329e-8 End = [1.015468434859026e-5, -2.370121063647859e-8] F = (4336.562538249274, -105.55557215941491)
+450 2020-12-01T02:45:18.099  9.17655740428878e-8 End = [1.269718119882318e-5, -5.4006993499971967e-8] F = (4332.774636368985, -104.62065484317259)
+500 2020-12-01T03:08:55.47  9.169066244873852e-8 End = [1.56781293435985e-5, -1.1488207032860871e-7] F = (4346.539859924207, -101.77853402943)
+550 2020-12-01T03:32:32.894  9.163204554067527e-8 End = [1.9010190287220936e-5, -1.8481600324372742e-7] F = (4423.272597591536, -100.04015275862085)
+600 2020-12-01T03:56:09.76  9.122783195346777e-8 End = [2.258025052599698e-5, -2.3771294718484805e-7] F = (4565.412040553057, -98.59909142791074)
+650 2020-12-01T04:19:46.882  9.072839422551384e-8 End = [2.6269752319954704e-5, -2.720625867436528e-7] F = (4687.408499986454, -96.88940148003516)
+700 2020-12-01T04:43:21.17  9.04154592002421e-8 End = [3.0067467359517008e-5, -2.849891439053237e-7] F = (4752.98421499052, -95.47316998072898)
+750 2020-12-01T05:06:57.477  8.978302488730619e-8 End = [3.392562615563841e-5, -2.7868831602637454e-7] F = (4778.290230615911, -93.75876917752645)
+800 2020-12-01T05:30:33.037  8.989100683500233e-8 End = [3.7911578238886674e-5, -2.6974410558585054e-7] F = (4773.103028153897, -91.25985671344515)
+850 2020-12-01T05:54:07.431  8.993794644563867e-8 End = [4.203133347067018e-5, -2.3597033559799469e-7] F = (4743.270468259716, -86.76940892108965)
+900 2020-12-01T06:17:42.139  9.00343153282621e-8 End = [4.6421205404913484e-5, -2.0573167927739083e-7] F = (4697.836885512769, -81.27853165169337)
+950 2020-12-01T06:41:17.61  9.003538908034938e-8 End = [5.104435245631284e-5, -1.5177523698052225e-7] F = (4653.525498772533, -75.90528932883574)
+1000 2020-12-01T07:04:48.589  8.991829818222996e-8 End = [5.597726041232446e-5, -8.232012672248438e-8] F = (4612.263426646843, -71.4589167044002)
+1050 2020-12-01T07:28:23.363  8.978923763704257e-8 End = [6.131834008426317e-5, -2.6582748942449643e-8] F = (4573.533466899295, -67.05712544609243)
+1100 2020-12-01T07:51:59.576  8.949747702463206e-8 End = [6.70272882717877e-5, 3.2155124090949824e-8] F = (4536.502815903613, -62.80191969279157)
+1150 2020-12-01T08:15:36.776  8.799632241533406e-8 End = [7.308180056357757e-5, 8.77790508562341e-8] F = (4502.64197067279, -59.90676108004459)
+1200 2020-12-01T08:39:10.644  8.955287484453866e-8 End = [7.965283341665823e-5, 1.1471617364917353e-7] F = (4465.388745266137, -57.04843568077915)
+1250 2020-12-01T09:02:45.306  8.954758674612183e-8 End = [8.689502243539947e-5, 1.0578296809408557e-7] F = (4430.189124813091, -54.34743506722635)
+1300 2020-12-01T09:26:17.022  8.936254114182536e-8 End = [9.469702123297976e-5, 7.891883843126549e-8] F = (4395.8878057898455, -52.253745690467)
+1350 2020-12-01T09:49:50.758  8.93913066154552e-8 End = [0.0001029785030646104, 5.896322474657457e-8] F = (4363.173387316676, -50.05869318795575)
+1400 2020-12-01T10:13:27.242  8.94809475289052e-8 End = [0.00011174935582118745, 4.822845032424733e-8] F = (4329.541629293836, -47.946055238244035)
+1450 2020-12-01T10:37:00.26  8.951643100845939e-8 End = [0.00012106963090724038, 2.9866890989172325e-8] F = (4296.8541753278605, -45.51646920151686)
+1500 2020-12-01T11:00:34.935  8.865715162707052e-8 End = [0.00013083833177719538, -1.1565125991902838e-8] F = (4200.6341196402245, -44.58036492480169)
+1550 2020-12-01T11:24:06.971  8.854919080536731e-8 End = [0.0001412279787573267, -9.267152867630315e-8] F = (4251.788525755001, -42.936098530055055)
+1600 2020-12-01T11:47:41.398  8.980464594542858e-8 End = [0.000152306287737857, -1.9573868585599543e-7] F = (4201.85086612779, -41.152839336886586)
+1650 2020-12-01T12:11:15.979  8.989964893413641e-8 End = [0.00016408519270459643, -3.248822542204398e-7] F = (4162.80015567701, -39.045063485138726)
+1700 2020-12-01T12:34:47.671  8.970121897699975e-8 End = [0.00017638905791020657, -4.618160966269369e-7] F = (4170.807705978279, -36.57311620695995)
+1750 2020-12-01T12:58:23.774  8.997344091108832e-8 End = [0.00018913067714783677, -5.737276798400304e-7] F = (4121.521073129483, -34.32880309235889)
+1800 2020-12-01T13:21:55.772  9.020931402869389e-8 End = [0.00020243315669235396, -6.802413213831625e-7] F = (4095.6276405434173, -31.92770070219047)
+1850 2020-12-01T13:45:28.123  9.02683523671518e-8 End = [0.00021633670761777782, -8.029319881496405e-7] F = (4068.2518205923343, -29.521887602612573)
+1900 2020-12-01T14:08:59.76  9.03519229697613e-8 End = [0.000230818037604243, -9.278174067497618e-7] F = (4043.744521316594, -25.96498368789189)
+1950 2020-12-01T14:32:29.418  9.041830691331679e-8 End = [0.0002460038663114609, -1.0895955664490786e-6] F = (3994.250431166325, -23.746723846147944)
+2000 2020-12-01T14:55:59.804  9.051454390706798e-8 End = [0.0002619967816739368, -1.295917299010131e-6] F = (4020.060942732851, -21.030670748213957)
+2050 2020-12-01T15:19:28.462  9.061251285636919e-8 End = [0.0002788930704117203, -1.5597604557860285e-6] F = (3967.1945304664455, -17.95765269891294)
+2100 2020-12-01T15:42:57.838  9.068936155882927e-8 End = [0.0002965846746518854, -1.8497132665986176e-6] F = (3938.8113545846672, -15.635056665020803)
+2150 2020-12-01T16:06:28.805  9.07107801658779e-8 End = [0.00031506895318311994, -2.1652461529099126e-6] F = (3914.9450632184758, -13.324617061942043)
+2200 2020-12-01T16:29:56.461  9.082235711306526e-8 End = [0.00033430746198414847, -2.495211355808516e-6] F = (3878.1171172672384, -11.135060590726074)
+2250 2020-12-01T16:53:23.893  9.096601965332102e-8 End = [0.0003543597812965234, -2.8655406977958773e-6] F = (3871.6595612066676, -8.671355123886133)
+2300 2020-12-01T17:17:03.027  9.096378976442506e-8 End = [0.0003752177328931456, -3.291374054796282e-6] F = (3845.4330465106855, -6.340793209364345)
+2350 2020-12-01T17:40:38.85  9.100981133152839e-8 End = [0.00039667945265414793, -3.747791103341437e-6] F = (3810.0215396516037, -5.441350746896394)
+2400 2020-12-01T18:04:14.889  9.122064667791527e-8 End = [0.0004186874914648302, -4.227048694508853e-6] F = (3793.8064940777394, -3.3484669281390875)
+2450 2020-12-01T18:27:51.464  9.089763379811889e-8 End = [0.0004410607917310679, -4.714785355925319e-6] F = (3762.910889494964, -1.3848015373246385)
+2500 2020-12-01T18:51:30.908  9.094557482547372e-8 End = [0.0004636440597690947, -5.176992143609197e-6] F = (3754.485556703957, 0.951715111419726)
+2550 2020-12-01T19:15:05.497  9.102471502694882e-8 End = [0.000486490690772516, -5.621041739100158e-6] F = (3734.5537086514983, 4.589270965089909)
+2600 2020-12-01T19:38:43.356  9.096739305868791e-8 End = [0.0005095424002910703, -6.051193609604478e-6] F = (3719.48971746205, 6.963215666920483)
+2650 2020-12-01T20:02:22.221  9.078151542478206e-8 End = [0.0005326965886608554, -6.47650468385034e-6] F = (3713.7833538647524, 10.390171597499393)
+2700 2020-12-01T20:26:02.614  9.074560216508386e-8 End = [0.0005559589919726481, -6.870844557228599e-6] F = (3682.1979597916993, 12.579132060386584)
+2750 2020-12-01T20:49:29.74  9.116880631148245e-8 End = [0.0005792695406788355, -7.258993273509295e-6] F = (3653.8785223805617, 14.788095500352075)
+2800 2020-12-01T21:13:01.816  9.077427035960357e-8 End = [0.0006027095953155601, -7.635278930003398e-6] F = (3630.1306340508486, 17.025457611716014)
+2850 2020-12-01T21:36:36.25  9.124382497873809e-8 End = [0.0006260334677702996, -7.980548219872703e-6] F = (3622.306797609336, 20.92672757081411)
+2900 2020-12-01T22:00:08.869  9.123628592176383e-8 End = [0.0006496763615514296, -8.316368135268491e-6] F = (3559.847558335601, 19.652770272223)
+2950 2020-12-01T22:23:43.21  9.162451745675112e-8 End = [0.0006735428383608119, -8.623549768283647e-6] F = (3510.302224182925, 20.898015341542582)
+3000 2020-12-01T22:47:13.146  9.132743169033182e-8 End = [0.0006978140597576491, -8.949900299133767e-6] F = (3455.1030029345447, 22.100698930093966)
+3050 2020-12-01T23:10:48.502  9.137084729754471e-8 End = [0.0007226201184052621, -9.322347793570227e-6] F = (3373.002689009546, 24.405768515802706)
+3100 2020-12-01T23:34:21.299  9.13503782008699e-8 End = [0.0007478398183808398, -9.721548791821813e-6] F = (3310.02703606606, 25.832918935786175)
+3150 2020-12-01T23:57:56.166  9.128515393741012e-8 End = [0.0007735028400966096, -1.01568371684346e-5] F = (3239.739275580677, 27.199783751285928)
+3200 2020-12-02T00:21:32.774  9.14214396470574e-8 End = [0.0007995462835363314, -1.0608220269648078e-5] F = (3169.294151320448, 29.55456594963322)
+3250 2020-12-02T00:45:03.189  9.145753746472267e-8 End = [0.000825842138528433, -1.1063405258471321e-5] F = (3112.554043880764, 31.203727084870028)
+3300 2020-12-02T01:08:35.74  9.141950366481826e-8 End = [0.0008523573568082826, -1.1500247329763625e-5] F = (3042.6645844259388, 32.50931387051887)
+3350 2020-12-02T01:32:02.175  9.114654992819647e-8 End = [0.0008791157074984664, -1.1925967161116573e-5] F = (2981.1409774962226, 33.872754970359935)
+3400 2020-12-02T01:55:33.453  9.126613049092054e-8 End = [0.0009060719227822473, -1.2353411343600351e-5] F = (2943.447662829176, 34.601668310955795)
+3450 2020-12-02T02:19:05.063  9.186629884520061e-8 End = [0.0009331520340098984, -1.2750134040891435e-5] F = (2917.25277620133, 36.25398859799572)
+3500 2020-12-02T02:42:43.811  9.111101609226189e-8 End = [0.0009603081115379902, -1.314157618077458e-5] F = (2866.3959191153153, 37.29438678598938)
+3550 2020-12-02T03:06:19.391  9.116759832247496e-8 End = [0.0009874964098579866, -1.3531855832666886e-5] F = (2805.3318883621005, 39.63622243534887)
+3600 2020-12-02T03:29:54.099  9.120073574973327e-8 End = [0.001015068234900224, -1.3932750242432112e-5] F = (2766.3937511230906, 41.127431363823845)
+3650 2020-12-02T03:53:27.258  9.165238622502418e-8 End = [0.0010430704367443016, -1.4358203010911913e-5] F = (2728.2422615783144, 43.60497401117816)
+3700 2020-12-02T04:17:00.153  9.166551180788951e-8 End = [0.0010716353570639613, -1.4796175841042765e-5] F = (2692.512994627091, 45.14096774970898)
+3750 2020-12-02T04:40:30.531  9.149134597437628e-8 End = [0.0011007929589902689, -1.5264537758821273e-5] F = (2643.565153775904, 45.569911027204924)
+3800 2020-12-02T05:03:58.259  9.1383765110698e-8 End = [0.0011305690747882148, -1.5788052002016925e-5] F = (2550.867985848208, 46.54282318946852)
+3850 2020-12-02T05:27:28.662  9.112317859278893e-8 End = [0.0011608349664827134, -1.6341641921696765e-5] F = (2475.132945639475, 44.751920987001995)
+3900 2020-12-02T05:51:02.302  8.950738295905753e-8 End = [0.0011912760274378823, -1.6913924160794287e-5] F = (2377.943182299266, 43.87537090104546)
+3950 2020-12-02T06:14:35.777  8.85084140815505e-8 End = [0.0012214396262583526, -1.7496761399260057e-5] F = (2318.3462541478048, 44.023266519461565)
+4000 2020-12-02T06:38:08.734  8.78763264854332e-8 End = [0.0012517989828739022, -1.810365103759227e-5] F = (2235.59543847823, 45.97490448109711)
+4050 2020-12-02T07:01:36.957  8.836074645550234e-8 End = [0.0012823958732059522, -1.8721398120516923e-5] F = (2164.7777902552516, 47.636184510961655)
+4100 2020-12-02T07:25:08.017  8.677526135575923e-8 End = [0.001313190495319631, -1.9350139144833953e-5] F = (2101.2402360402302, 48.046620669149405)
+4150 2020-12-02T07:48:38.832  8.836823248851418e-8 End = [0.001344319735236294, -1.9993081240651125e-5] F = (2033.8743094927358, 47.99816374857243)
+4200 2020-12-02T08:12:09.122  8.839157147292225e-8 End = [0.0013753765180906266, -2.0625115946570714e-5] F = (1969.8183286442445, 47.96755131660895)
+4250 2020-12-02T08:35:36.927  8.746165354180623e-8 End = [0.0014062049601386295, -2.1224565578243234e-5] F = (1878.7801476733198, 45.86405938821002)
+4300 2020-12-02T08:59:15.459  8.86922191665367e-8 End = [0.0014373692481433522, -2.1817357566235126e-5] F = (1837.770340699097, 44.58070279775275)
+4350 2020-12-02T09:22:50.911  8.800125861207823e-8 End = [0.0014675236807837526, -2.2357872821714074e-5] F = (1794.4067391748679, 44.1378791554654)
+4400 2020-12-02T09:46:24.59  8.52233475863269e-8 End = [0.0014970666893601907, -2.2869222392939456e-5] F = (1697.902779439054, 44.015540197893976)
+4450 2020-12-02T10:09:58.469  8.75930731922695e-8 End = [0.001526004913609478, -2.3327585395515274e-5] F = (1686.9316319113034, 45.24228230507451)
+4500 2020-12-02T10:33:29.6  8.87585029482664e-8 End = [0.001554609996107988, -2.3728088428962487e-5] F = (1634.9835320463058, 46.16894009727003)
+4550 2020-12-02T10:57:01.124  3.963628753664406e-8 End = [0.0015820612125359488, -2.4082724312297122e-5] F = (1600.3237695675093, 46.242635662052706)
+ERROR: LoadError: Too small time step!
+Stacktrace:
+ [1] error(::String) at ./error.jl:33
+ [2] time_step!(::Fluid; CFL::Float64) at /home/hetao/.julia/packages/FVM/m1F17/src/solver.jl:97
+ [3] coupled_time_step!(::Fluid, ::LEFEM.LEStructure; CFL::Float64) at /home/hetao/.julia/packages/PreCoIBM/6lPIX/src/solver.jl:81
+ [4] top-level scope at /home/hetao/Projects/JuliaProj/PreCoIBM.jl/PreCoIBM/test/test.jl:72
+ [5] include(::Function, ::Module, ::String) at ./Base.jl:380
+ [6] include(::Module, ::String) at ./Base.jl:368
+ [7] exec_options(::Base.JLOptions) at ./client.jl:296
+ [8] _start() at ./client.jl:506
+in expression starting at /home/hetao/Projects/JuliaProj/PreCoIBM.jl/PreCoIBM/test/test.jl:70
+
