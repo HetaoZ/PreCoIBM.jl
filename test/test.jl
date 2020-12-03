@@ -16,9 +16,9 @@ println("Modules were loaded successfully.")
 # define fluids
 # --------------------------------
 f = Fluid(2, 
-            point1 = [-10e-3, 0e-3], 
-            point2 = [50e-3, 65e-3], 
-            nmesh = Int[60, 65] .* 4, 
+            point1 = [-2e-3, 0e-3], 
+            point2 = [3e-3, 65e-3], 
+            nmesh = Int[5, 65] .* 4, 
             ng = 4, 
             dist = [nw, 1]
             )  
@@ -30,8 +30,8 @@ fill_fluid!(f, c1)
 
 rho2, p2, u2 = after_shock(c1.p, c1.rho, c1.u[1], 1.21, f.para["gamma"], 1)
 
-c2 = Cell(2, rho = rho2, u = [u2, 0.], p = p2)
-fill_fluid!(f, c2, [-10e-3, 0.], [0., 65e-3])
+# c2 = Cell(2, rho = rho2, u = [u2, 0.], p = p2)
+# fill_fluid!(f, c2, [-10e-3, 0.], [0., 65e-3])
 
 set_bounds!(f, ["free" "free"; "refl" "refl"])
 
@@ -79,7 +79,7 @@ while frame < 1000000 && time < 0.02
     # seperate_advance!(m, dt)
     frame += 1
     time += dt
-    if frame%50 == 0
+    if frame%1 == 0
         save_time(frame, time, "out/time")
         save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
         save_to_vtk(m.ims.s, ["x0", "d"], [:x0, :d], "out/structure_"*string(N+frame))
