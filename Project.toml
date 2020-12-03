@@ -14,6 +14,7 @@ MathKits = "0aefbb3a-8f27-41be-8eac-0ff28e0d4a49"
 PointInPoly = "b33f1834-3304-4c26-96eb-60ff7015163d"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Rigid = "a02216df-6561-4a50-88cf-6852979b54d1"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 julia = "1.5"
