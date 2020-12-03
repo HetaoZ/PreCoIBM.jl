@@ -11,6 +11,7 @@ FVM = "642af85a-1a5f-42d5-b31d-7ad52e664d57"
 LEFEM = "bbb4a789-0fc6-4acc-8eae-7f825c1dd415"
 MathKits = "0aefbb3a-8f27-41be-8eac-0ff28e0d4a49"
 PointInPoly = "b33f1834-3304-4c26-96eb-60ff7015163d"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Rigid = "a02216df-6561-4a50-88cf-6852979b54d1"
 
 [compat]
