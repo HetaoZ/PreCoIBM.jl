@@ -8,7 +8,8 @@ using Distributed
 addprocs(nw - nprocs() + 1)
 println("Opened ", nworkers()," process(es) of PID ", workers())
 
-@everywhere using PreCoIBM
+@everywhere include("src/PreCoIBM.jl")
+@everywhere using .PreCoIBM
 
 println("Modules were loaded successfully.")
 
@@ -35,7 +36,11 @@ rho2, p2, u2 = after_shock(c1.p, c1.rho, c1.u[1], 1.21, f.para["gamma"], 1)
 
 set_bounds!(f, ["free" "free"; "refl" "refl"])
 
-review(f)
+# review(f)
+
+println("mass before all = ", PreCoIBM.FVM.check_mass!(f))
+println("cell mass before all = ", f.cells[12,5].rho*f.d[1]*f.d[2])
+
 # --------------------------------
 # define solids
 # --------------------------------
@@ -48,7 +53,7 @@ cons_dof_in_box!(s, [-1,-1e-7], [1,1e-7])
 
 s.movable = true
 
-review(s)
+# review(s)
 # --------------------------------
 # assemble model
 # --------------------------------
@@ -62,12 +67,15 @@ frame = 0
 time = 0
 N = 1000000
 
+println("mass = ", PreCoIBM.FVM.check_mass!(m.imf.f))
+
+
 save_time(frame, time, "out/time")
 save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
 save_fluid_mesh(m.imf.f, "out/fluid_mesh")
 # save_to_fig(m.imf.f, dataname = "rho", frame = frame, figpath = "outputfig/", levels = [0,2,10])
 
-while frame < 1000000 && time < 0.02
+while frame < 10 && time < 0.02
     global frame, time
     dt = coupled_time_step!(m.imf.f, m.ims.s, CFL = 0.3)
     # dtf = PreCoIBM.FVM.time_step!(m.f, CFL = 0.3)
@@ -77,6 +85,11 @@ while frame < 1000000 && time < 0.02
     # @time 
     coupled_advance!(m, dt)
     # seperate_advance!(m, dt)
+
+    println("mass = ", PreCoIBM.FVM.check_mass!(m.imf.f))
+    # println("cell mass after all = ", m.imf.f.cells[12,5].rho*f.d[1]*f.d[2])
+
+
     frame += 1
     time += dt
     if frame%1 == 0

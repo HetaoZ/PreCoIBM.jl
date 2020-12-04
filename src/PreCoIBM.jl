@@ -57,7 +57,7 @@ const GAUSS_POINT = Dict(
                          3 => ([0.11270166537925852, 0.5, 0.8872983346207415],  [0.277777777777778, 0.4444444444444445, 0.277777777777778])
                         )                                      
 const NGP_SURFACE = 3
-const NUM_PARTICLE = 2
+const NUM_PARTICLE = 1
 # -------------------------------------------------
 # union class
 Structure = Union{LEStructure, RigidStructure}

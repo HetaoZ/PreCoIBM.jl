@@ -17,3 +17,11 @@ end
 #     end
 #     return a
 # end
+
+function check_particle_mass!(particles)
+    s = 0.
+    for p in particles
+        s += p.m
+    end
+    return s
+end

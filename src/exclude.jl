@@ -7,18 +7,23 @@ function exclude_fluid!(f::Fluid, impoly, dt)
 
     xs = fetch_poly_x(impoly, f.dim)
 
-    parray = [@spawnat pid begin
-        localparticles = ImParticle[]
-        for c in localpart(f.cells)
-            if MK.between(c.x, f.point1, f.point2)
-                if pinpoly(xs, c.x)==1 && c.rho > 0.
-                    append!(localparticles, exclude_cell!(c, f.d, impoly, dt))
+    particles = ImParticle[]
+    @sync for pid in workers()
+        lp = @fetchfrom pid begin
+            localparticles = ImParticle[]
+            for c in localpart(f.cells)
+                if MK.between(c.x, f.point1, f.point2)
+                    if pinpoly(xs, c.x)==1 && c.rho > 0.
+                        append!(localparticles, exclude_cell!(c, f.d, impoly, dt, f.point1, f.point2))
+                    end
                 end
             end
+            localparticles
         end
-        localparticles
-    end for pid in workers()]
-    particles = DArray(parray)
+        append!(particles, lp)
+    end    
+
+    # println("total particle mass = ", check_particle_mass!(particles))
 
     # remap
     remap_to_fluid!(f, particles, impoly, dt)
@@ -27,9 +32,9 @@ function exclude_fluid!(f::Fluid, impoly, dt)
     FVM.update_boundaries!(f)
 end
 
-function exclude_cell!(c, d, impoly, dt)
+function exclude_cell!(c, d, impoly, dt, point1, point2)
     particles = generate_particles!(c, d)
-    exclude_particles!(particles, impoly, dt, maximum(d), MK.rect_radius(d), c.x)
+    exclude_particles!(particles, impoly, dt, maximum(d), MK.rect_radius(d), c.x, point1, point2)
     return particles
 end
 
@@ -74,9 +79,9 @@ function get_particle_position(x, d, np)
     return xp   
 end
 
-function exclude_particles!(particles, impoly, dt, h, R, x)
+function exclude_particles!(particles, impoly, dt, h, R, x, point1, point2)
     for p in particles
-        convex = find_nearest_convex!(p.x, impoly)[2]
+        convex = find_nearest_convex!(p.x, impoly, point1, point2)[2]
         ratio = get_ratio_on_convex!(p.x, convex)
 
         p.dx = root_on_convex(p.x, convex) -x #+ R * convex.n
@@ -84,7 +89,7 @@ function exclude_particles!(particles, impoly, dt, h, R, x)
     end
 end
 
-function find_nearest_convex!(x, impoly)
+function find_nearest_convex!(x, impoly, point1, point2)
     n = length(impoly)
     d = Vector{Float64}(undef, n)
     dim = length(x)
@@ -100,7 +105,20 @@ function find_nearest_convex!(x, impoly)
         error("undef dim")
     end
     p = sortperm(d)
-    return p[1], impoly[p[1]]
+    for K = 1:length(p)
+        c = impoly[p[K]]
+        ans = true
+        for imnode in c.nodes
+            if !MK.between(imnode.x+c.n*1.e-10, point1, point2)
+                ans = false
+                break
+            end
+        end
+        if ans
+            # println("Convex = ", impoly[p[K]])
+            return p[K], impoly[p[K]]
+        end
+    end
 end
 
 function root_on_convex(x::Vector{Float64}, convex)
@@ -123,11 +141,10 @@ function remap_to_fluid!(f, particles, impoly, dt)
 
     # println("-- remap_to_fluid: 1 --")
     # @time 
-    @sync for pid in workers()
-        @spawnat pid begin
-            for particle in localpart(particles)
+    @sync for particle in localpart(particles)
+                # particle = particles[1]
                 ip = FVM.get_point_located_cell!(particle.x, f)
-                convex = find_nearest_convex!(particle.x, impoly)[2]
+                convex = find_nearest_convex!(particle.x, impoly, f.point1, f.point2)[2]
                 # try
                 #     f.cells[Tuple(ip)...].x
                 # catch
@@ -135,22 +152,41 @@ function remap_to_fluid!(f, particles, impoly, dt)
                 #     println("ip = ",ip)
                 #     println("convex = ",convex)
                 # end
-                ipa = get_target_appropriate!(ip, f.cells[Tuple(ip)...].x, f.d, Int.(sign.(convex.n)), xs)
+                # ipa = get_target_appropriate!(ip, f.cells[Tuple(ip)...].x, f.d, Int.(sign.(convex.n)), xs)
+                pxa = get_target_appropriate!(particle.x, f.d, convex.n, f.point1, f.point2, xs)
+                ipa = FVM.get_point_located_cell!(pxa, f)
+
+                # println("particle.x = ", particle.x)
+                # println("convex.n = ", convex.n)
+                # println("pxa = ", pxa)
+                # println("ipa = ", ipa)
                 
                 cpid = FVM.index_to_pid(ipa, nzone = f.nmesh .+ (f.ng * 2), dist = f.dist)
                 
-                ub, n = get_convex_speed_and_n!(f.cells[Tuple(ipa)...].x, impoly)
-        
+                ub, n = get_convex_speed_and_n!(f.cells[Tuple(ipa)...].x, impoly, f.point1, f.point2)
+                
+                # println("cell mass before = ", f.cells[Tuple(ipa)...].rho*f.d[1]*f.d[2])
+                # println("particle mass before = ", particle.m)
+                # println("cpid = ", cpid)
+
                 @spawnat cpid begin
-                    remap_particle_to_cell!(particle, f.cells[Tuple(ipa)...], f.constants, V, ub, n, h)
+                    # println("-- remap_to_fluid: 1 --")
+
+                    # remap_particle_to_cell!(particle, f.cells[Tuple(ipa)...], f.constants, V, ub, n, h)
+                    remap_particle_to_cell!(particle, f.cells[Tuple(ipa)...], f.para, V, ub, n, h)
+
+                    # println("-- remap_to_fluid: 2 --")
                 end
-            end
+
+                
+                   
+            # end
         end
-    end
+        # println("cell mass after = ", f.cells[12,5].rho*f.d[1]*f.d[2])
 end
 
-function get_convex_speed_and_n!(x::Vector{Float64}, impoly)
-    convex = find_nearest_convex!(x, impoly)[2]
+function get_convex_speed_and_n!(x::Vector{Float64}, impoly, point1, point2)
+    convex = find_nearest_convex!(x, impoly, point1, point2)[2]
     ratio = get_ratio_on_convex!(x, convex)
     n = length(convex.nodes)
     if n == 1
@@ -163,11 +199,15 @@ function get_convex_speed_and_n!(x::Vector{Float64}, impoly)
     return u_new, convex.n
 end
 
-function remap_particle_to_cell!(p::ImParticle, c::Cell, constants::Dict, V::Float64, ub::Vector{Float64}, n::Vector{Float64}, h::Float64)
+function remap_particle_to_cell!(p::ImParticle, c, constants::Dict, V::Float64, ub::Vector{Float64}, n::Vector{Float64}, h::Float64)
+    # println("-- remap_particle_to_cell: 0 --")
     rho_old = c.rho
     u_old = copy(c.u)
     e_old = c.e
     c.rho = rho_old + p.m / V
+
+    # println("c.rho = ", c.rho)
+    # println("rho_old = ", rho_old)
 
     # empirical formulas
     if (c.u - ub)' * n < 0.
