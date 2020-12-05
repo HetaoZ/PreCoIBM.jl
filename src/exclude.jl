@@ -153,7 +153,7 @@ function remap_to_fluid!(f, particles, impoly, dt)
                 #     println("convex = ",convex)
                 # end
                 # ipa = get_target_appropriate!(ip, f.cells[Tuple(ip)...].x, f.d, Int.(sign.(convex.n)), xs)
-                pxa = get_target_appropriate!(particle.x, f.d, convex.n, f.point1, f.point2, xs)
+                pxa = get_target_appropriate!(particle.x, f.d, f.point1, f.point2, xs)
                 ipa = FVM.get_point_located_cell!(pxa, f)
 
                 # println("particle.x = ", particle.x)

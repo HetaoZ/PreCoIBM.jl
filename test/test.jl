@@ -67,36 +67,36 @@ frame = 0
 time = 0
 N = 1000000
 
-println("mass = ", PreCoIBM.FVM.check_mass!(m.imf.f))
+# println("mass = ", PreCoIBM.FVM.check_mass!(m.imf.f))
 
 
-save_time(frame, time, "out/time")
-save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
-save_fluid_mesh(m.imf.f, "out/fluid_mesh")
-# save_to_fig(m.imf.f, dataname = "rho", frame = frame, figpath = "outputfig/", levels = [0,2,10])
+# save_time(frame, time, "out/time")
+# save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
+# save_fluid_mesh(m.imf.f, "out/fluid_mesh")
+# # save_to_fig(m.imf.f, dataname = "rho", frame = frame, figpath = "outputfig/", levels = [0,2,10])
 
-while frame < 10 && time < 0.02
-    global frame, time
-    dt = coupled_time_step!(m.imf.f, m.ims.s, CFL = 0.3)
-    # dtf = PreCoIBM.FVM.time_step!(m.f, CFL = 0.3)
-    # dtc = PreCoIBM.time_step!(m.f, m.ims.s)
-    # println(dtf, "   ",dtc)
-    # println("-- coupled_advance: 1 --")
-    # @time 
-    coupled_advance!(m, dt)
-    # seperate_advance!(m, dt)
+# while frame < 10 && time < 0.02
+#     global frame, time
+#     dt = coupled_time_step!(m.imf.f, m.ims.s, CFL = 0.3)
+#     # dtf = PreCoIBM.FVM.time_step!(m.f, CFL = 0.3)
+#     # dtc = PreCoIBM.time_step!(m.f, m.ims.s)
+#     # println(dtf, "   ",dtc)
+#     # println("-- coupled_advance: 1 --")
+#     # @time 
+#     coupled_advance!(m, dt)
+#     # seperate_advance!(m, dt)
 
-    println("mass = ", PreCoIBM.FVM.check_mass!(m.imf.f))
-    # println("cell mass after all = ", m.imf.f.cells[12,5].rho*f.d[1]*f.d[2])
+#     println("mass = ", PreCoIBM.FVM.check_mass!(m.imf.f))
+#     # println("cell mass after all = ", m.imf.f.cells[12,5].rho*f.d[1]*f.d[2])
 
 
-    frame += 1
-    time += dt
-    if frame%1 == 0
-        save_time(frame, time, "out/time")
-        save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
-        save_to_vtk(m.ims.s, ["x0", "d"], [:x0, :d], "out/structure_"*string(N+frame))
-        # save_to_fig(m.imf.f, dataname = "rho", frame = ceil(Int,frame/cut), figpath = "outputfig/", levels = [0,2,10])
-        println(frame," ", Dates.now(), "  ", dt," End = ",m.ims.s.nodes[3].d, " F = ",(sum(m.ims.s.ext_f[1:2:end]),sum(m.ims.s.ext_f[2:2:end])))
-    end
-end
+#     frame += 1
+#     time += dt
+#     if frame%1 == 0
+#         save_time(frame, time, "out/time")
+#         save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
+#         save_to_vtk(m.ims.s, ["x0", "d"], [:x0, :d], "out/structure_"*string(N+frame))
+#         # save_to_fig(m.imf.f, dataname = "rho", frame = ceil(Int,frame/cut), figpath = "outputfig/", levels = [0,2,10])
+#         println(frame," ", Dates.now(), "  ", dt," End = ",m.ims.s.nodes[3].d, " F = ",(sum(m.ims.s.ext_f[1:2:end]),sum(m.ims.s.ext_f[2:2:end])))
+#     end
+# end

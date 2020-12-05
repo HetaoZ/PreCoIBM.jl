@@ -10,7 +10,7 @@ function force_of_pressure_to_solid!(f::Fluid, s::Structure)
             point = c.nodes[1].x
             # ip = FVM.get_point_located_cell!(point, f)
             # ipa = get_target_appropriate!(ip, f.cells[Tuple(ip)...].x, f.d, Int.(sign.(c.n)), xs)
-            pxa = get_target_appropriate!(point, f.d, c.n, f.point1, f.point2, xs)
+            pxa = get_target_appropriate!(point, f.d, f.point1, f.point2, xs)
             ipa = FVM.get_point_located_cell!(pxa, f)
 
             force = cell_force_on_convex!(f.cells[Tuple(ipa)...], c.n, c.nodes[1].u)
@@ -27,7 +27,7 @@ function force_of_pressure_to_solid!(f::Fluid, s::Structure)
                 # ip = FVM.get_point_located_cell!(point, f)
                 # ipa = get_target_appropriate!(ip, f.cells[Tuple(ip)...].x, f.d, Int.(sign.(c.n)), xs)
 
-                pxa = get_target_appropriate!(point, f.d, c.n, f.point1, f.point2, xs)
+                pxa = get_target_appropriate!(point, f.d, f.point1, f.point2, xs)
                 ipa = FVM.get_point_located_cell!(pxa, f)
 
                 cell = f.cells[Tuple(ipa)...]
@@ -71,40 +71,55 @@ end
 #     end
 # end
 
-function get_target_appropriate!(px, d, normal, point1, point2, xs)
-    if pinpoly(xs, px) != 1
-        ans = px
-    elseif pinpoly(xs, px + normal .* d) != 1
-        ans = px + normal .* d
+# function get_target_appropriate!(px, d, normal, point1, point2, xs)
+#     if pinpoly(xs, px) != 1
+#         ans = px
+#     elseif pinpoly(xs, px + normal .* d) != 1
+#         ans = px + normal .* d
+#     else
+#         println("-- ERROR INFO --")
+#         println("target x = ", px)
+#         println("normal = ", normal)
+#         println("d = ", d)
+#         error("no appropriate target")
+#     end
+#     for k = 1:length(point1)
+#         if ans[k] < point1[k]
+#             ans[k] += d[k]
+#         end
+#         if ans[k] > point2[k]
+#             ans[k] -= d[k]
+#         end
+#     end
+#     return ans
+# end
+
+function get_target_appropriate!(px, d, point1, point2, xs)
+    r = 2
+    l = 2 .* r .+ 1
+    A = reshape(grid_around_point(px, d, r), (prod(l),))
+    d = map(x->norm(px-x), A)
+    p = sortperm(d)
+    for k = 1:length(d)
+        x = A[p[k]]
+        if pinpoly(x, xs) == 0 && MK.between(x, point1, point2)
+            return x
+        end
+    end     
+    error("no appropriate target")
+end
+
+function grid_around_point(px, d, r)
+    dim = length(px)
+    l = 2 .* r .+ 1
+    if dim == 1
+        A = [[px[1]+d[1]*(-r[1]+i-1)] for i = 1:l[1]]
+    elseif dim == 2
+        A = [[px[1]+d[1]*(-r[1]+i-1), px[2]+d[2]*(-r[2]+j-1)] for i = 1:l[1], j = 1:l[2]]
     else
-        # try
-        #     A = Array{Vector{Int}}(undef,Tuple([3 for i=1:length(px)]))
-        #     for i in CartesianIndices(A)
-        #         A[i] = [i[k]-2 for k=1:length(px)]
-        #     end
-        #     for xdir in A
-        #         if pinpoly(xs, px + xdir .* d) != 1
-        #             return ip + xdir
-        #         end
-        #     end
-        #     error("No appropriate cell was found.")
-        # catch
-            println("-- ERROR INFO --")
-            println("target x = ", px)
-            println("normal = ", normal)
-            println("d = ", d)
-            error("no appropriate target")
-        # end
+        error("undef")
     end
-    for k = 1:length(point1)
-        if ans[k] < point1[k]
-            ans[k] += d[k]
-        end
-        if ans[k] > point2[k]
-            ans[k] -= d[k]
-        end
-    end
-    return ans
+    return A
 end
 
 function cell_force_on_convex!(c::Cell, normal::Vector{Float64}, ub::Vector{Float64})
