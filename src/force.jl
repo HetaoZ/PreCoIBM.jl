@@ -95,7 +95,7 @@ end
 # end
 
 function get_target_appropriate!(px, d, point1, point2, xs)
-    r = 2
+    r = [2,2]
     l = 2 .* r .+ 1
     A = reshape(grid_around_point(px, d, r), (prod(l),))
     d = map(x->norm(px-x), A)
