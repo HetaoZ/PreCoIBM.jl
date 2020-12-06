@@ -19,7 +19,7 @@ function coupled_advance!(m::ImModel, dt)
             # force to solid
             force_of_pressure_to_solid!(fk, sk1)
 
-            LEFEM.advance!(sk1, dt, "newmark")
+            structure_advance!(sk1, dt)
 
             # ----------------
             # correct

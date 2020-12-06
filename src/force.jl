@@ -96,17 +96,19 @@ end
 
 function get_target_appropriate!(px, d, point1, point2, xs)
     if length(px) == 2
-        r = [2,2]
-        l = 2 .* r .+ 1
-        A = reshape(grid_around_point(px, d, r), (prod(l),))
-        d = map(x->norm(px-x), A)
-        p = sortperm(d)
-        for k = 1:length(d)
-            x = A[p[k]]
-            if pinpoly(xs[:,1],xs[:,2],x[1],x[2]) == 0 && MK.between(x, point1, point2)
-                return x
+        for m = 1:100
+            r = [m+1, m+1]
+            l = 2 .* r .+ 1
+            A = reshape(grid_around_point(px, d, r), (prod(l),))
+            d = map(x->norm(px-x), A)
+            p = sortperm(d)
+            for k = 1:length(d)
+                x = A[p[k]]
+                if pinpoly(xs[:,1],xs[:,2],x[1],x[2]) == 0 && MK.between(x, point1, point2)
+                    return x
+                end
             end
-        end    
+        end 
     else
         error("undef")
     end 

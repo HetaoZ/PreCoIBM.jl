@@ -43,6 +43,12 @@ review(f::Fluid) = FVM.review(f)
 review(s::LEStructure) = LEFEM.review(s)
 export review
 
+structure_advance!(s::LEStructure, dt) = LEFEM.advance!(s, dt, "newmark")
+structure_advance!(s::RigidStructure, dt) = Rigid.advance!(s, dt, "explicit")
+
+
+
+
 # -------------------------------------------------
 # constants
 const ITER_SCHEME = "GS" # "J", "GS"
