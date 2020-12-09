@@ -130,11 +130,11 @@ end
 
 function cell_force_on_convex!(c::Cell, normal::Vector{Float64}, ub::Vector{Float64})
     ur = c.u - ub
-    if ur' * normal < 0  # debug
-        total_f = - (c.rho * (ur * ur' * normal)' * normal + c.p)
-    else
+    # if ur' * normal < 0  # debug
+        # total_f = - (c.rho * (ur * ur' * normal)' * normal + c.p)
+    # else
         total_f = - c.p
-    end
+    # end
     return total_f * normal
 end
 
