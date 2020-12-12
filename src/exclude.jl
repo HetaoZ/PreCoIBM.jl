@@ -214,6 +214,7 @@ function remap_particle_to_cell!(p::ImParticle, c, constants::Dict, V::Float64, 
         c.u = copy(ub) - (c.u - ub)' * n * n * (norm(p.dx)/(norm(p.dx)+h))^2
         c.e = e_old + 0.5 * (MK.norm2(u_old) - MK.norm2(c.u - ub))    
     end
+
     c.e = max(0., c.e)
 
     c.p = FVM.pressure(rho = c.rho, e = c.e, gamma = constants["gamma"])

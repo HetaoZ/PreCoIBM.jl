@@ -2,7 +2,7 @@ using Dates
 println()
 println(Dates.now())
 
-nw = 4
+nw = Sys.CPU_THREADS
 
 using Distributed
 addprocs(nw - nprocs() + 1)
@@ -17,9 +17,9 @@ println("Modules were loaded successfully.")
 # define fluids
 # --------------------------------
 f = Fluid(2, 
-            point1 = [-5e-3, 0e-3], 
-            point2 = [5e-3, 65e-3], 
-            nmesh = Int[10, 65] .* 4, 
+            point1 = [-10e-3, 0e-3], 
+            point2 = [15e-3, 65e-3], 
+            nmesh = Int[25, 65] .* 4, 
             ng = 2, 
             dist = [nw, 1]
             )  

@@ -15,7 +15,8 @@ using PointInPoly
 using MathKits
 const MK = MathKits
 
-using FVM
+include("/home/hetao/Projects/JuliaProj/FVM.jl/FVM/src/FVM.jl")
+using .FVM
 export Fluid, Cell, fill_fluid!, after_shock
 save_fluid_mesh = FVM.save_fluid_mesh; export save_fluid_mesh
 # save_to_txt = FVM.save_to_txt; export save_to_txt
