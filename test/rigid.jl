@@ -19,7 +19,7 @@ println("Modules were loaded successfully.")
 f = Fluid(2, 
             point1 = [0.05, 0], 
             point2 = [0.25, 0.2], 
-            nmesh = Int[2, 2] .* 20, 
+            nmesh = Int[2, 2] .* 40, 
             ng = 2, 
             dist = [nw, 1]
             )  
@@ -65,7 +65,7 @@ save_time(frame, time, "out/time")
 save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
 save_fluid_mesh(m.imf.f, "out/fluid_mesh")
 
-while frame < 1000000 && time < 1
+while frame < 204 && time < 1
     global frame, time
 
     dt = coupled_time_step!(m.imf.f, m.ims.s, CFL = 0.3)

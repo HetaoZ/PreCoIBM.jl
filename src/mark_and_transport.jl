@@ -1,6 +1,6 @@
-function mark_and_transport!(f, impoly, dt)
+function mark_and_transport!(f, impoly)
     mark_fluid!(f, impoly)
-    transport_fluid!(f, impoly, dt)
+    transport_fluid!(f, impoly)
 end
 
 function mark_fluid!(f, impoly)
@@ -45,13 +45,17 @@ function mark_fluid!(f, impoly)
                 cx = c.x
                 if MK.between(cx, f.point1, f.point2)
                     if c.mark == 0
-                        d = map(x->norm(cx-x), cell_2_xs)
-                        c.target_id = cell_2_ids(sortperm(d)[1])
+                        d = map(x->norm(cx + rand_bias(f.dim)*1.e-12 - x), cell_2_xs)
+                        c.target_id = cell_2_ids[sortperm(d)[1]]
                     end
                 end
             end
         end
     end
+end
+
+function rand_bias(n)
+    return rand(n) .* 2 .- 1
 end
 
 function distance_to_impoly!(x, impoly)
@@ -72,7 +76,7 @@ function distance_to_impoly!(x, impoly)
     return minimum(d)
 end
 
-transport_fluid!(f) = remap_to_fluid!(f, generate_particles!(f))
+transport_fluid!(f, impoly) = remap_to_fluid!(f, generate_particles!(f), impoly)
 
 function generate_particles!(f::Fluid)
     particles = ImParticle[]
@@ -91,6 +95,7 @@ function generate_particles!(f::Fluid)
         end
         append!(particles, localparticles)
     end
+    return particles
 end
 
 function generate_particles!(c, d, target_x)
@@ -124,7 +129,17 @@ function generate_particles!(c, d, target_x)
     return particles    
 end
 
-function remap_to_fluid!(f, particles)
+function get_particle_position(x, d, np)
+    dim = length(np)
+    xp = Array{Array{Float64,1},dim}(undef, Tuple(np))
+    step = d ./ np
+    for i in CartesianIndices(xp)
+        xp[i] = [x[k] - d[k]/2 + (i[k] - 0.5)*step[k] for k in 1:dim]
+    end
+    return xp   
+end
+
+function remap_to_fluid!(f, particles, impoly)
     V = prod(f.d)
     h = maximum(f.d)
 
@@ -179,4 +194,50 @@ function remap_particle_to_cell!(p::ImParticle, c, constants::Dict, V::Float64, 
     c.p = FVM.pressure(rho = c.rho, e = c.e, gamma = constants["gamma"])
 
     c.w = FVM.states2w(rho = c.rho, u = c.u, e = c.e)
+end
+
+function get_convex_speed_and_n!(x::Vector{Float64}, impoly, point1, point2)
+    convex = find_nearest_convex!(x, impoly, point1, point2)[2]
+    ratio = get_ratio_on_convex!(x, convex)
+    n = length(convex.nodes)
+    if n == 1
+        u_new = convex.nodes[1].u
+    elseif n == 2
+        u_new = (1 - ratio) * convex.nodes[1].u + ratio * convex.nodes[2].u
+    else
+        error("undef dim")
+    end
+    return u_new, convex.n
+end
+
+function find_nearest_convex!(x, impoly, point1, point2)
+    n = length(impoly)
+    d = Vector{Float64}(undef, n)
+    dim = length(x)
+    if dim == 1
+        for i = 1:n
+            d[i] = norm(x - impoly[i].nodes[1].x)
+        end
+    elseif dim == 2
+        for i = 1:n
+            d[i] = MK.distance_to_segment(x, impoly[i].nodes[1].x, impoly[i].nodes[2].x)
+        end
+    else
+        error("undef dim")
+    end
+    p = sortperm(d)
+    for K = 1:length(p)
+        c = impoly[p[K]]
+        ans = true
+        for imnode in c.nodes
+            if !MK.between(imnode.x+c.n*1.e-10, point1, point2)
+                ans = false
+                break
+            end
+        end
+        if ans
+            # println("Convex = ", impoly[p[K]])
+            return p[K], impoly[p[K]]
+        end
+    end
 end

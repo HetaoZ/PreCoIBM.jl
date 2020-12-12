@@ -29,9 +29,9 @@ function coupled_advance!(m::ImModel, dt)
 
             if m.imf.exclude
                 if ITER_SCHEME == "GS"
-                    mark_and_transport!(fk1, impolyk1, dt)
+                    mark_and_transport!(fk1, impolyk1)
                 elseif ITER_SCHEME == "J"
-                    mark_and_transport!(fk1, impolyk, dt)
+                    mark_and_transport!(fk1, impolyk)
                 else
                     error("undef ITER_SCHEME")
                 end
@@ -63,9 +63,9 @@ function coupled_advance!(m::ImModel, dt)
         fluid_advance!(m.imf.f, dt)
         if m.imf.exclude
             if m.imf.is_marked
-                transport_fluid!(m.imf.f, m.ims.impoly, dt)
+                transport_fluid!(m.imf.f, m.ims.impoly)
             else
-                mark_and_transport!(m.imf.f, m.ims.impoly, dt)
+                mark_and_transport!(m.imf.f, m.ims.impoly)
                 m.imf.is_marked = true
             end
         end     
