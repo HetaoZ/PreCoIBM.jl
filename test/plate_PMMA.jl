@@ -72,7 +72,7 @@ save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
 save_fluid_mesh(m.imf.f, "out/fluid_mesh")
 # save_to_fig(m.imf.f, dataname = "rho", frame = frame, figpath = "outputfig/", levels = [0,2,10])
 
-while frame < 1000000 && time < 1
+while frame < 500 && time < 1
     global frame, time
     dt = coupled_time_step!(m.imf.f, m.ims.s, CFL = 0.3)
     # dtf = PreCoIBM.FVM.time_step!(m.f, CFL = 0.3)

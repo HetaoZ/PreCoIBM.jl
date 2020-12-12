@@ -9,8 +9,6 @@ function coupled_advance!(m::ImModel, dt)
             # predict
             # ----------------
             fk1 = copyfluid!(m.imf.f)
-            # println("-- coupled_advance: 1.1 --")
-            # @time 
             fluid_advance!(fk1, dt)
 
             sk1 = deepcopy(m.ims.s)

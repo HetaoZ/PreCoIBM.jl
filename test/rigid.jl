@@ -65,7 +65,7 @@ save_time(frame, time, "out/time")
 save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
 save_fluid_mesh(m.imf.f, "out/fluid_mesh")
 
-while frame < 204 && time < 1
+while frame < 3 && time < 1
     global frame, time
 
     dt = coupled_time_step!(m.imf.f, m.ims.s, CFL = 0.3)

@@ -6,9 +6,11 @@ end
 function mark_fluid!(f, impoly)
     xs = fetch_poly_x(impoly, f.dim)
     h = maximum(f.d)
+    imin, imax = get_poly_region!(f, impoly)
+
     @sync for pid in workers()
         @spawnat pid begin
-            for c in localpart(f.cells)
+            for c in localpart(f.cells[imin[1]:imax[1], imin[2]:imax[2]])
                 cx = c.x
                 if MK.between(cx, f.point1, f.point2)
                     inside = pinpoly(xs, cx)
@@ -26,8 +28,13 @@ function mark_fluid!(f, impoly)
             end
         end
     end
-
-    cell_marks = fetch_data(f, :mark)
+    
+    cell_marks = ones(Int8, size(f.cells))
+    for i in CartesianIndices(f.cells)
+        if MK.between([i[1], i[2]], imin, imax)
+            cell_marks[i] = f.cells[i].mark
+        end
+    end
     N2 = count(i->i==2, cell_marks)
     cell_2_ids = Vector{CartesianIndex}(undef, N2)
     k = 0
@@ -41,7 +48,7 @@ function mark_fluid!(f, impoly)
 
     @sync for pid in workers()
         @spawnat pid begin
-            for c in localpart(f.cells)
+            for c in localpart(f.cells[imin[1]:imax[1], imin[2]:imax[2]])
                 cx = c.x
                 if MK.between(cx, f.point1, f.point2)
                     if c.mark == 0
@@ -52,6 +59,10 @@ function mark_fluid!(f, impoly)
             end
         end
     end
+end
+
+function get_poly_region!(f, impoly; extra_width = 1)
+    return get_region!(f, fetch_poly_x(impoly, f.dim), extra_width = extra_width)
 end
 
 function rand_bias(n)
