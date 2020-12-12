@@ -7,7 +7,6 @@ function exclude_fluid!(f::Fluid, impoly, dt)
 
     xs = fetch_poly_x(impoly, f.dim)
 
-    particles = ImParticle[]
     @sync for pid in workers()
         lp = @fetchfrom pid begin
             localparticles = ImParticle[]

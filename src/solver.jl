@@ -11,7 +11,7 @@ function coupled_advance!(m::ImModel, dt)
             fk1 = copyfluid!(m.imf.f)
             # println("-- coupled_advance: 1.1 --")
             # @time 
-            FVM.advance!(fk1, dt)
+            fluid_advance!(fk1, dt)
 
             sk1 = deepcopy(m.ims.s)
             sk1.ext_f = zeros(Float64, size(sk1.ext_f))
@@ -29,9 +29,9 @@ function coupled_advance!(m::ImModel, dt)
 
             if m.imf.exclude
                 if ITER_SCHEME == "GS"
-                    exclude_fluid!(fk1, impolyk1, dt)
+                    mark_and_transport!(fk1, impolyk1, dt)
                 elseif ITER_SCHEME == "J"
-                    exclude_fluid!(fk1, impolyk, dt)
+                    mark_and_transport!(fk1, impolyk, dt)
                 else
                     error("undef ITER_SCHEME")
                 end
@@ -60,9 +60,14 @@ function coupled_advance!(m::ImModel, dt)
     else
         m.ims.s.ext_f = zeros(Float64, size(m.ims.s.ext_f))
         force_of_pressure_to_solid!(m.imf.f, m.ims.s)
-        FVM.advance!(m.imf.f, dt)
+        fluid_advance!(m.imf.f, dt)
         if m.imf.exclude
-            exclude_fluid!(m.imf.f, m.ims.impoly, dt)
+            if m.imf.is_marked
+                transport_fluid!(m.imf.f, m.ims.impoly, dt)
+            else
+                mark_and_transport!(m.imf.f, m.ims.impoly, dt)
+                m.imf.is_marked = true
+            end
         end     
         immerse!(m) 
         return    

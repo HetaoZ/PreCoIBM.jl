@@ -31,6 +31,7 @@ cons_dof_in_box! = LEFEM.cons_dof_in_box!; export cons_dof_in_box!
 using Rigid
 export create_rigid, set_fixed_u!, set_fixed_omega!
 
+fetch_data(f::Fluid, field) = FVM.fetch_data(f, field)
 fetch_data(s::LEStructure, field) = LEFEM.fetch_data(s, field)
 fetch_data(s::RigidStructure, field) = Rigid.fetch_data(s, field)
 export fetch_data
@@ -47,8 +48,7 @@ export review
 structure_advance!(s::LEStructure, dt) = LEFEM.advance!(s, dt, "newmark")
 structure_advance!(s::RigidStructure, dt) = Rigid.advance!(s, dt, "explicit")
 
-
-
+fluid_advance!(f::Fluid, dt) = FVM.advance!(f, dt)
 
 # -------------------------------------------------
 # constants
@@ -76,7 +76,8 @@ include("solver.jl")
 export coupled_advance!, coupled_time_step!, seperate_advance!
 include("utils.jl")
 include("force.jl")
-include("exclude.jl")
+# include("exclude.jl")
+include("mark_and_transport.jl")
 include("io_post.jl")
 export save_time
 
