@@ -2,10 +2,7 @@ using Dates
 println()
 println(Dates.now())
 
-nw = Sys.CPU_THREADS
-
 using Distributed
-addprocs(nw - nprocs() + 1)
 println("Opened ", nworkers()," process(es) of PID ", workers())
 
 @everywhere include("src/PreCoIBM.jl")
@@ -21,7 +18,7 @@ f = Fluid(2,
             point2 = [15e-3, 65e-3], 
             nmesh = Int[25, 65] .* 4, 
             ng = 2, 
-            dist = [nw, 1]
+            dist = [nworkers(), 1]
             )  
 f.para["gamma"] = 1.4
 f.para["consider_vis_item"] = false
