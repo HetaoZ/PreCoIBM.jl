@@ -1,6 +1,8 @@
 function mark_and_transport!(f, impoly)
-    mark_fluid!(f, impoly)
-    transport_fluid!(f, impoly)
+    println("-- mark_and_transport: 0 --")
+    @time mark_fluid!(f, impoly)
+    println("-- mark_and_transport: 1 --")
+    @time transport_fluid!(f, impoly)
 end
 
 function mark_fluid!(f, impoly)
@@ -8,9 +10,12 @@ function mark_fluid!(f, impoly)
     h = maximum(f.d)
     imin, imax = get_poly_region!(f, impoly)
 
-    @sync for pid in workers()
+    H = f.cells[imin[1]:imax[1], imin[2]:imax[2]]
+
+    println("-- mark_fluid: 1 --")
+    @time @sync for pid in workers()
         @spawnat pid begin
-            for c in localpart(f.cells[imin[1]:imax[1], imin[2]:imax[2]])
+            for c in localpart(H)
                 cx = c.x
                 if MK.between(cx, f.point1, f.point2)
                     inside = pinpoly(xs, cx)
@@ -30,8 +35,9 @@ function mark_fluid!(f, impoly)
     end
     
     cell_marks = ones(Int8, size(f.cells))
-    for i in CartesianIndices(f.cells)
-        if MK.between([i[1], i[2]], imin, imax)
+    println("-- mark_fluid: 2 --")
+    @time for i in CartesianIndices(f.cells)
+        if MK.between([Tuple(i)...], imin, imax)
             cell_marks[i] = f.cells[i].mark
         end
     end
@@ -46,9 +52,10 @@ function mark_fluid!(f, impoly)
     end
     cell_2_xs = map(id->f.cells[id].x, cell_2_ids)
 
-    @sync for pid in workers()
+    println("-- mark_fluid: 3 --")
+    @time @sync for pid in workers()
         @spawnat pid begin
-            for c in localpart(f.cells[imin[1]:imax[1], imin[2]:imax[2]])
+            for c in localpart(H)
                 cx = c.x
                 if MK.between(cx, f.point1, f.point2)
                     if c.mark == 0

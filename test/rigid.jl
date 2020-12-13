@@ -2,10 +2,7 @@ using Dates
 println()
 println(Dates.now())
 
-nw = 1
-
 using Distributed
-addprocs(nw - nprocs() + 1)
 println("Opened ", nworkers()," process(es) of PID ", workers())
 
 @everywhere include("src/PreCoIBM.jl")
@@ -17,11 +14,11 @@ println("Modules were loaded successfully.")
 # define fluids
 # --------------------------------
 f = Fluid(2, 
-            point1 = [0.05, 0], 
-            point2 = [0.25, 0.2], 
-            nmesh = Int[2, 2] .* 40, 
+            point1 = [0.0, 0], 
+            point2 = [1.0, 0.2], 
+            nmesh = Int[10, 2] .* 40, 
             ng = 2, 
-            dist = [nw, 1]
+            dist = [nworkers(), 1]
             )  
 f.para["gamma"] = 1.4
 f.para["consider_vis_item"] = false
@@ -43,9 +40,9 @@ set_bounds!(f, ["free" "free"; "refl" "refl"])
 # --------------------------------
 
 # build model
-s = create_rigid(2, 7.6, 1, PreCoIBM.MathKits.shape_star(100; center = [0.15, 0.1], R = 0.05, r = 0.05, angle = 0)...)
+s = create_rigid(2, 7.6, 1, PreCoIBM.MathKits.shape_star(100; center = [0.15, 0.05], R = 0.05, r = 0.05, angle = 0)...)
 
-s.movable = false
+# s.movable = false
 
 # review(s)
 # --------------------------------
