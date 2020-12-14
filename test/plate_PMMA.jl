@@ -40,7 +40,7 @@ set_bounds!(f, ["free" "free"; "refl" "refl"])
 # --------------------------------
 
 # read model
-s = read_model("Quad4", "pstrain", "in/plate.msh", "in/PMMA_molded.para")
+s = read_model("Quad4", "pstrain", "in/plate_2x50.msh", "in/PMMA_molded.para")
 
 # constrain
 cons_dof_in_box!(s, [-1,-1e-7], [1,1e-7])
