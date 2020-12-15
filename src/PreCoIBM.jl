@@ -15,14 +15,16 @@ using PointInPoly
 using MathKits
 const MK = MathKits
 
-using FVM
-export Fluid, Cell, fill_fluid!, after_shock
+include("/home/hetao/Projects/JuliaProj/FVM.jl/FVM/src/FVM.jl")
+using .FVM
+export Fluid
+fill_fluid! = FVM.fill_fluid!; export fill_fluid!
+after_shock = FVM.after_shock; export after_shock
 save_fluid_mesh = FVM.save_fluid_mesh; export save_fluid_mesh
-# save_to_txt = FVM.save_to_txt; export save_to_txt
-# save_to_fig = FVM.save_to_fig; export save_to_fig
 set_bounds! = FVM.set_bounds!; export set_bounds!
 
-using LEFEM
+include("/home/hetao/Projects/JuliaProj/LEFEM.jl/LEFEM/src/LEFEM.jl")
+using .LEFEM
 read_model = LEFEM.read_model; export read_model
 cons_dof! = LEFEM.cons_dof!; export cons_dof!
 cons_dof_in_box! = LEFEM.cons_dof_in_box!; export cons_dof_in_box!
@@ -30,7 +32,6 @@ cons_dof_in_box! = LEFEM.cons_dof_in_box!; export cons_dof_in_box!
 using Rigid
 export create_rigid, set_fixed_u!, set_fixed_omega!
 
-fetch_data(f::Fluid, field) = FVM.fetch_data(f, field)
 fetch_data(s::LEStructure, field) = LEFEM.fetch_data(s, field)
 fetch_data(s::RigidStructure, field) = Rigid.fetch_data(s, field)
 export fetch_data
@@ -48,6 +49,7 @@ structure_advance!(s::LEStructure, dt) = LEFEM.advance!(s, dt, "newmark")
 structure_advance!(s::RigidStructure, dt) = Rigid.advance!(s, dt, "explicit")
 
 fluid_advance!(f::Fluid, dt) = FVM.advance!(f, dt)
+copy_fluid!(f::Fluid) = FVM.copy_fluid!(f)
 
 # -------------------------------------------------
 # constants
@@ -62,7 +64,7 @@ const GAUSS_POINT = Dict(
                          2 => ([0.21132486540518702,  0.788675134594813], [0.5, 0.5]),
                          3 => ([0.11270166537925852, 0.5, 0.8872983346207415],  [0.277777777777778, 0.4444444444444445, 0.277777777777778])
                         )                                      
-const NGP_SURFACE = 3
+const NGP_SURFACE = 2
 const NUM_PARTICLE = 1
 # -------------------------------------------------
 # union class
@@ -76,7 +78,8 @@ export coupled_advance!, coupled_time_step!, seperate_advance!
 include("utils.jl")
 include("force.jl")
 # include("exclude.jl")
-include("mark_and_transport.jl")
+include("mark.jl")
+include("transport.jl")
 include("io_post.jl")
 export save_time
 

@@ -1,4 +1,4 @@
-lc = 1 ;
+lc = 0.25 ;
 
 Point(1) = {0,0,0,lc};
 Point(2) = {1,0,0,lc};
@@ -10,3 +10,5 @@ Line(6) = {3,1};
 
 Line Loop(7) = {4,5,6};
 Plane Surface(8) = {7};
+
+Physical Surface("boundary") = {8};

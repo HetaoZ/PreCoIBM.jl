@@ -2,48 +2,45 @@ using Dates
 println()
 println(Dates.now())
 
-using Distributed
 println("Opened ", nworkers()," process(es) of PID ", workers())
 
-@everywhere include("src/PreCoIBM.jl")
-@everywhere using .PreCoIBM
+try 
+    @everywhere using .PreCoIBM
+catch
+    @everywhere include("src/PreCoIBM.jl")
+    @everywhere using .PreCoIBM
+end
 
 println("Modules were loaded successfully.")
 
 # --------------------------------
 # define fluids
 # --------------------------------
-f = Fluid(2, 
-            point1 = [-10e-3, 0e-3], 
-            point2 = [15e-3, 65e-3], 
-            nmesh = Int[25, 65] .* 4, 
+f = Fluid(realdim = 2, 
+            point1 = [-1e-3, 0, 0], 
+            point2 = [3e-3, 2e-3, 0], 
+            nmesh = Int[4*10, 2*10, 1], 
             ng = 2, 
-            dist = [nworkers(), 1]
-            )  
+            dist = [nworkers(), 1, 1])  
 f.para["gamma"] = 1.4
-f.para["consider_vis_item"] = false
+f.para["viscosity"] = false
+f.para["flux scheme"] = "LF" # "AUSM" or "LF"
 
-c1 = Cell(2, rho = 1.2, u = [0., 0.], p = 1.01e5)
-fill_fluid!(f, c1)
+rho0, u0, p0 = 1.0, [0., 0., 0.], 1.0
+fill_fluid!(f, rho0, u0, p0)
 
-rho2, p2, u2 = after_shock(c1.p, c1.rho, c1.u[1], 1.21, f.para["gamma"], 1)
+rho2, p2, u2 = after_shock(p0, rho0, u0[1], 1.21, f.para["gamma"], 1)
 
-c2 = Cell(2, rho = rho2, u = [u2, 0.], p = p2)
-fill_fluid!(f, c2, [-10e-3, 0.], [0., 65e-3])
+# fill_fluid!(f, [-1e-3, 0., 0.], [0., 65e-3, 0.], rho2, [u2, 0., 0.], p2)
 
-set_bounds!(f, ["free" "free"; "refl" "refl"])
-
-# review(f)
-
-println("mass before all = ", PreCoIBM.FVM.check_mass!(f))
-println("cell mass before all = ", f.cells[12,5].rho*f.d[1]*f.d[2])
+set_bounds!(f, ["free", "refl"], ["refl", "refl"])
 
 # --------------------------------
 # define solids
 # --------------------------------
 
 # read model
-s = read_model("Quad4", "pstrain", "in/plate.msh", "in/steel.para")
+s = read_model("Quad4", "pstrain", "in/plate_1x1.msh", "in/steel.para")
 
 # constrain
 cons_dof_in_box!(s, [-1,-1e-7], [1,1e-7])
@@ -64,36 +61,40 @@ frame = 0
 time = 0
 N = 1000000
 
-# println("mass = ", PreCoIBM.FVM.check_mass!(m.imf.f))
 
+println(frame,"  ", Dates.now(), "  ", 0)
+
+println("mass = ", PreCoIBM.check_mass!(m.imf.f))
 
 save_time(frame, time, "out/time")
 save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
 save_fluid_mesh(m.imf.f, "out/fluid_mesh")
 # save_to_fig(m.imf.f, dataname = "rho", frame = frame, figpath = "outputfig/", levels = [0,2,10])
 
-while frame < 1000000 && time < 0.02
+while frame < 2 && time < 0.02
     global frame, time
     dt = coupled_time_step!(m.imf.f, m.ims.s, CFL = 0.3)
+
+    
+
     # dtf = PreCoIBM.FVM.time_step!(m.f, CFL = 0.3)
     # dtc = PreCoIBM.time_step!(m.f, m.ims.s)
     # println(dtf, "   ",dtc)
     # println("-- coupled_advance: 1 --")
     # @time 
     coupled_advance!(m, dt)
-    # seperate_advance!(m, dt)
-
-    println("mass = ", PreCoIBM.FVM.check_mass!(m.imf.f))
-    # println("cell mass after all = ", m.imf.f.cells[12,5].rho*f.d[1]*f.d[2])
+    
+    
+    println("mass = ", PreCoIBM.check_mass!(m.imf.f))
 
 
     frame += 1
     time += dt
-    if frame%10 == 0
+    if frame%1 == 0
         save_time(frame, time, "out/time")
         save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
         save_to_vtk(m.ims.s, ["x0", "d"], [:x0, :d], "out/structure_"*string(N+frame))
         # save_to_fig(m.imf.f, dataname = "rho", frame = ceil(Int,frame/cut), figpath = "outputfig/", levels = [0,2,10])
-        println(frame," ", Dates.now(), "  ", dt," End = ",m.ims.s.nodes[3].d, " F = ",(sum(m.ims.s.ext_f[1:2:end]),sum(m.ims.s.ext_f[2:2:end])))
+        println(frame,"  ", Dates.now(), "  ", dt)
     end
 end
