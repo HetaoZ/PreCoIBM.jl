@@ -47,9 +47,10 @@ function force_of_pressure_to_solid!(f::Fluid, s::Structure, cell_2_ids, cell_2_
         error("undef dim")
     end    
 end
-
+    
 function get_nearest_cell_2!(x, cell_2_ids, cell_2_xs)
-    d = map(cell_x->norm(x + rand_bias(length(x))*1.e-12 - cell_x[1:length(x)]), cell_2_xs)
+    # d = map(cell_x->norm(x + rand_bias(length(x))*1.e-12 - cell_x[1:length(x)]), cell_2_xs)
+    d = map(cell_x->norm(x - cell_x[1:length(x)]), cell_2_xs)
     p = sortperm(d)
     return cell_2_ids[p[1]]
 end

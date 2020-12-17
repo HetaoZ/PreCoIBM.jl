@@ -24,7 +24,7 @@ mutable struct ImParticle
     dim::Int
     x::Array{Float64} # 坐标
     dx::Array{Float64} # 运动矢量
-    target_id::CartesianIndex # 目标单元编号
+    target_id::Array{Int} # 目标单元编号
     u::Array{Float64} # 速度
     m::Float64 # 质量
     ek::Float64 # 动能
@@ -32,7 +32,7 @@ mutable struct ImParticle
     E::Float64 # 总能
     V::Float64 # 六面体体积
 end
-ImParticle(dim::Int) = ImParticle(dim, zeros(Float64, dim), zeros(Float64,dim), CartesianIndex(0), zeros(Float64,dim), 0., 0., 0., 0., 0.)
+ImParticle(dim::Int) = ImParticle(dim, zeros(Float64, dim), zeros(Float64,dim), zeros(Int,dim), zeros(Float64,dim), 0., 0., 0., 0., 0.)
 
 mutable struct ImFluid 
     f::Fluid

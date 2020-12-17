@@ -31,7 +31,7 @@ fill_fluid!(f, rho0, u0, p0)
 
 rho2, p2, u2 = after_shock(p0, rho0, u0[1], 1.21, f.para["gamma"], 1)
 
-# fill_fluid!(f, [-1e-3, 0., 0.], [0., 65e-3, 0.], rho2, [u2, 0., 0.], p2)
+# fill_fluid!(f, [-1e-3, 0., 0.], [0., 2e-3, 0.], rho2, [u2, 0., 0.], p2)
 
 set_bounds!(f, ["free", "refl"], ["refl", "refl"])
 
@@ -67,11 +67,11 @@ println(frame,"  ", Dates.now(), "  ", 0)
 println("mass = ", PreCoIBM.check_mass!(m.imf.f))
 
 save_time(frame, time, "out/time")
-save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
+save_to_vtk(m.imf.f, ["rho", "e", "p", "mark"], [:rho, :e, :p, :mark], "out/fluid_"*string(N+frame))
 save_fluid_mesh(m.imf.f, "out/fluid_mesh")
 # save_to_fig(m.imf.f, dataname = "rho", frame = frame, figpath = "outputfig/", levels = [0,2,10])
 
-while frame < 2 && time < 0.02
+while frame < 20 && time < 0.02
     global frame, time
     dt = coupled_time_step!(m.imf.f, m.ims.s, CFL = 0.3)
 
@@ -92,8 +92,8 @@ while frame < 2 && time < 0.02
     time += dt
     if frame%1 == 0
         save_time(frame, time, "out/time")
-        save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
-        save_to_vtk(m.ims.s, ["x0", "d"], [:x0, :d], "out/structure_"*string(N+frame))
+        save_to_vtk(m.imf.f, ["rho", "e", "p", "mark"], [:rho, :e, :p, :mark], "out/fluid_"*string(N+frame))
+        # save_to_vtk(m.ims.s, ["x0", "d"], [:x0, :d], "out/structure_"*string(N+frame))
         # save_to_fig(m.imf.f, dataname = "rho", frame = ceil(Int,frame/cut), figpath = "outputfig/", levels = [0,2,10])
         println(frame,"  ", Dates.now(), "  ", dt)
     end

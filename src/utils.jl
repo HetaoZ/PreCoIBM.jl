@@ -29,7 +29,7 @@ function get_ratio_on_convex!(x::Vector{Float64}, c::ImConvex)
     if length(c.nodes) == 1
         return 1.0
     elseif length(c.nodes) == 2
-        return  MK.root_on_segment(x, c.nodes[1].x, c.nodes[2].x)[2]
+        return  MK.root_on_segment(x[1:length(c.nodes[1].x)], c.nodes[1].x, c.nodes[2].x)[2]
     else
         error("undef")
     end
@@ -135,7 +135,7 @@ end
 
 function check_mass!(particles::Array{ImParticle})
     s = 0.
-    for particle in eachindex(particles)
+    for particle in particles
         s += particle.m
     end
     return s

@@ -11,19 +11,27 @@ function mark_fluid!(f, impoly)
             inds = localindices(f.rho)
             bias = [inds[k][1] - 1 for k = 1:3]
             for i in inds[1], j in inds[2], k in inds[3]
-                if pinpoly(xs, [f.x[i], f.y[j], f.z[k]][1:f.realdim]) == 1
-                    mark = 0
-                else
-                    if distance_to_impoly!([f.x[i], f.y[j], f.z[k]][1:f.realdim], impoly) > h
-                        mark = 1
+                if MK.between([f.x[i], f.y[j], f.z[k]][1:f.realdim], f.point1[1:f.realdim], f.point2[1:f.realdim])
+                    if pinpoly(xs, [f.x[i], f.y[j], f.z[k]][1:f.realdim]) == 1
+                        mark = 0
                     else
-                        mark = 2
+                        if distance_to_impoly!([f.x[i], f.y[j], f.z[k]][1:f.realdim], impoly) > 2*h
+                            mark = 1
+                        else
+                            mark = 2
+                        end
                     end
+                else
+                    mark = 1
                 end
                 localpart(f.mark)[i-bias[1], j-bias[2], k-bias[3]] = mark
             end
         end
     end
+end
+
+function mark_and_target_fluid!(f, impoly)
+    mark_fluid!(f, impoly)
     
     N2 = count(i->i==2, f.mark)
     cell_2_ids = Vector{CartesianIndex}(undef, N2)
@@ -43,10 +51,18 @@ function mark_fluid!(f, impoly)
             inds = localindices(f.rho)
             bias = [inds[k][1] - 1 for k = 1:3]
             for i in inds[1], j in inds[2], k in inds[3]
-                if MK.between([f.x[i], f.y[j], f.z[k]], f.point1, f.point2)
+                if MK.between([f.x[i], f.y[j], f.z[k]][1:f.realdim], f.point1[1:f.realdim], f.point2[1:f.realdim])
                     if f.mark[i,j,k] == 0
-                        d = map(x->norm([f.x[i], f.y[j], f.z[k]] + rand_bias(3)*1.e-12 - x), cell_2_xs)
-                        localpart[f.target_id][i-bias[1], j-bias[2], k-bias[3]] = cell_2_ids[sortperm(d)[1]]
+                        # d = map(x->norm([f.x[i], f.y[j], f.z[k]] + rand_bias(3)*1.e-12 - x), cell_2_xs)
+                        d = map(x->norm([f.x[i], f.y[j], f.z[k]] - x), cell_2_xs)
+
+                        tid = cell_2_ids[sortperm(d)[1]]
+
+                        # println("tid = ", tid)
+
+                        localpart(f.target_id)[i-bias[1], j-bias[2], k-bias[3]] = [tid[1], tid[2], tid[3]]
+
+                        # println("local = ", localpart(f.target_id)[i-bias[1], j-bias[2], k-bias[3]])
                     end
                 end
             end            
