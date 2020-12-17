@@ -14,16 +14,14 @@ using PointInPoly
 using MathKits
 const MK = MathKits
 
-include("/home/hetao/Projects/JuliaProj/FVM.jl/FVM/src/FVM.jl")
-using .FVM
+using FVM
 export Fluid
 fill_fluid! = FVM.fill_fluid!; export fill_fluid!
 after_shock = FVM.after_shock; export after_shock
 save_fluid_mesh = FVM.save_fluid_mesh; export save_fluid_mesh
 set_bounds! = FVM.set_bounds!; export set_bounds!
 
-include("/home/hetao/Projects/JuliaProj/LEFEM.jl/LEFEM/src/LEFEM.jl")
-using .LEFEM
+using LEFEM
 read_model = LEFEM.read_model; export read_model
 cons_dof! = LEFEM.cons_dof!; export cons_dof!
 cons_dof_in_box! = LEFEM.cons_dof_in_box!; export cons_dof_in_box!
