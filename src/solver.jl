@@ -36,8 +36,8 @@ function coupled_advance!(m::ImModel, dt)
                     error("undef ITER_SCHEME")
                 end
             else
-                # This immerse!() eliminates spurious oscillations when exclude_particles = false.
-                immerse!(m) 
+                # This immerse!() eliminates spurious oscillations when exclude = false.
+                # immerse!(m) 
             end
 
             
@@ -78,16 +78,15 @@ function coupled_advance!(m::ImModel, dt)
 end
 
 function seperate_advance!(m::ImModel, dt)
-    FVM.advance!(m.imf.f, dt)
+    fluid_advance!(m.imf.f, dt)
     if m.ims.s.movable
-        LEFEM.advance!(m.ims.s, dt, "newmark")
+        structure_advance!(m.ims.s, dt)
     end
-    immerse!(m)
+    # immerse!(m)
 end
 
 function coupled_time_step!(f::Fluid, s::Structure; CFL::Float64 = 0.5 )
     dtf = FVM.time_step!(f, CFL = CFL)
-    # dts = LEFEM.time_step!(s)
     dts = Inf # Newmark
     if s.movable
         dtc = time_step!(f, s)

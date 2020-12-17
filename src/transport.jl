@@ -1,7 +1,7 @@
 function mark_and_transport!(f, impoly)
     # println("-- mark_and_transport: 0 --")
     # @time 
-    mark_and_target_fluid!(f, impoly)
+    mark_and_find_target!(f, impoly)
     # println("-- mark_and_transport: 1 --")
     # @time 
     transport_fluid!(f, impoly)
@@ -12,52 +12,38 @@ transport_fluid!(f, impoly) = remap_to_fluid!(f, generate_particles!(f), impoly)
 function generate_particles!(f::Fluid)
     particles = ImParticle[]
 
-    @sync for pid in workers()
-        localparticles = @fetchfrom pid begin
-            # println("-- generate_particles: 1 --")
-            lp = ImParticle[]
-            inds = localindices(f.rho)
-            bias = [inds[k][1] - 1 for k = 1:3]
-            for i in inds[1], j in inds[2], k in inds[3]
-                # println("-- generate_particles: 2 --")
-                # println("x = ", [f.x[i], f.y[j], f.z[k]])
-                # println("1 = ", f.point1)
-                # println("2 = ", f.point2)
-                # println(MK.between([f.x[i], f.y[j], f.z[k]][1:f.realdim], f.point1[1:f.realdim], f.point2[1:f.realdim]))
-                if MK.between([f.x[i], f.y[j], f.z[k]][1:f.realdim], f.point1[1:f.realdim], f.point2[1:f.realdim]) && f.mark[i,j,k] == 0 && f.rho[i,j,k] > f.para["rho0"]*1.e-6
-                    # println("-- generate_particles: 3 --")
-                    # println("target_id = ", f.target_id[i,j,k])
+    for id in CartesianIndices(f.rho)
+        i, j, k = id[1], id[2], id[3]
+        if MK.between([f.x[i], f.y[j], f.z[k]][1:f.realdim], f.point1[1:f.realdim], f.point2[1:f.realdim]) && f.mark[id] == 0 #&& f.rho[id] > 1.e-14
+
+            target_id = f.target_id[:,id]
+            target_x = [f.x[target_id[1]], f.y[target_id[2]], f.z[target_id[3]]]
                     
-                    target_x = [f.x[f.target_id[i,j,k][1]], f.y[f.target_id[i,j,k][2]], f.z[f.target_id[i,j,k][3]]]
-                    
-                    new_particle = generate_particles!([f.x[i], f.y[j], f.z[k]], 
+            push!(particles, 
+                generate_particles!(
+                    [f.x[i], f.y[j], f.z[k]], 
                     f.realdim, 
-                    f.rho[i,j,k], 
-                    f.u[i,j,k], 
-                    f.e[i,j,k], 
+                    f.rho[id], 
+                    f.u[:,id], 
+                    f.e[id], 
                     f.d, 
                     target_x, 
-                    f.target_id[i,j,k])
-                    
-                    push!(lp, new_particle)
+                    target_id
+                )
+            )
 
-                    # clear cell
-                    localpart(f.rho)[i-bias[1],j-bias[2],k-bias[3]] = 0.
-                    localpart(f.u)[i-bias[1],j-bias[2],k-bias[3]] = zeros(Float64, 3)
-                    localpart(f.e)[i-bias[1],j-bias[2],k-bias[3]] = 0.
-                    localpart(f.p)[i-bias[1],j-bias[2],k-bias[3]] = 0.
-                    localpart(f.w)[i-bias[1],j-bias[2],k-bias[3]] = zeros(Float64, 5)
-
-                    
-                end
-            end            
-            lp
+            f.rho[id] = 0.
+            f.u[:,id] = zeros(Float64,3)
+            f.e[id] = 0.
+            f.p[id] = 0.
+            f.w[:,id] = zeros(Float64,5)
         end
-        append!(particles, localparticles)
     end
-    # println("num of particles = ", length(particles))
+
+    println("num of particles = ", length(particles))
     println("particle mass = ", check_mass!(particles))
     # println("clear particle");particles = ImParticle[]
+
     return particles
 end
 
@@ -97,47 +83,32 @@ function remap_to_fluid!(f, particles, impoly)
     V = prod(f.d[1:f.realdim])
     h = maximum(f.d[1:f.realdim])
 
-    @sync for particle in particles
-                
-                target_index = Tuple(particle.target_id)
-                
-                cpid = FVM.index_to_pid(particle.target_id, nzone = f.nmesh .+ (f.ng * 2), dist = f.dist)
+    for particle in particles
+        
+        ub, n = get_convex_speed_and_n!(particle.x + particle.dx, impoly, f.point1, f.point2)
 
-                
-                ub, n = get_convex_speed_and_n!(particle.x + particle.dx, impoly, f.point1, f.point2)
-                
-                # println("cell mass before = ", f.cells[Tuple(ipa)...].rho*f.d[1]*f.d[2])
-                # println("particle mass before = ", particle.m)
-                # println("cpid = ", cpid)
+        tid = CartesianIndex(particle.target_id[1], particle.target_id[2], particle.target_id[3])
 
-                @spawnat cpid begin
-                    # println("-- remap_to_fluid: 1 --")
+        rho, u, e, p, w = remap_particle_to_cell!(
+            particle, 
+            f.rho[tid], 
+            f.u[:,tid], 
+            f.e[tid], 
+            f.p[tid], 
+            f.w[:,tid], 
+            f.para, 
+            V, 
+            ub, 
+            n, 
+            h
+        )
 
-                    rho, u, e, p, w = remap_particle_to_cell!(particle, 
-                    f.rho[target_index...], 
-                    f.u[target_index...], 
-                    f.e[target_index...], 
-                    f.p[target_index...], 
-                    f.w[target_index...], 
-                    f.para, V, ub, n, h)
-
-                    inds = localindices(f.rho)
-                    bias = [inds[k][1]-1 for k = 1:3]
-
-                    localpart(f.rho)[Tuple(particle.target_id - bias)...] = rho
-                    localpart(f.u)[Tuple(particle.target_id - bias)...] = u
-                    localpart(f.e)[Tuple(particle.target_id - bias)...] = e
-                    localpart(f.p)[Tuple(particle.target_id - bias)...] = p
-                    localpart(f.w)[Tuple(particle.target_id - bias)...] = w
-
-                    # println("-- remap_to_fluid: 2 --")
-                end
-
-                
-                   
-            # end
-        end
-        # println("cell mass after = ", f.cells[12,5].rho*f.d[1]*f.d[2])
+        f.rho[tid] = rho
+        f.u[:,tid] = u
+        f.e[tid] = e
+        f.p[tid] = p
+        f.w[:,tid] = w
+    end
 end
 
 function remap_particle_to_cell!(particle::ImParticle, rho, u, e, p, w, para::Dict, V::Float64, ub::Vector{Float64}, n::Vector{Float64}, h::Float64)
@@ -181,56 +152,3 @@ function remap_particle_to_cell!(particle::ImParticle, rho, u, e, p, w, para::Di
     return rho, u, e, p, w
 end
 
-function correct_cell_status(rho, u, e, p)
-    if rho < 1.e-12 || e < 1.e-12 || p < 1.e-12
-        return 0. , zeros(Float64, size(u)) , 0. , 0.
-    else
-        return rho, u, e, p
-    end
-end
-
-function get_convex_speed_and_n!(x::Vector{Float64}, impoly, point1, point2)
-    convex = find_nearest_convex!(x, impoly, point1, point2)[2]
-    ratio = get_ratio_on_convex!(x, convex)
-    n = length(convex.nodes)
-    if n == 1
-        u_new = convex.nodes[1].u
-    elseif n == 2
-        u_new = (1 - ratio) * convex.nodes[1].u + ratio * convex.nodes[2].u
-    else
-        error("undef dim")
-    end
-    return u_new, convex.n
-end
-
-function find_nearest_convex!(x, impoly, point1, point2)
-    n = length(impoly)
-    d = Vector{Float64}(undef, n)
-    dim = length(impoly[1].nodes[1].x)
-    if dim == 1
-        for i = 1:n
-            d[i] = norm(x[1:dim] - impoly[i].nodes[1].x)
-        end
-    elseif dim == 2
-        for i = 1:n
-            d[i] = MK.distance_to_segment(x[1:dim], impoly[i].nodes[1].x, impoly[i].nodes[2].x)
-        end
-    else
-        error("undef dim")
-    end
-    p = sortperm(d)
-    for K = 1:length(p)
-        c = impoly[p[K]]
-        ans = true
-        for imnode in c.nodes
-            if !MK.between((imnode.x+c.n*1.e-10)[1:dim], point1[1:dim], point2[1:dim])
-                ans = false
-                break
-            end
-        end
-        if ans
-            # println("Convex = ", impoly[p[K]])
-            return p[K], impoly[p[K]]
-        end
-    end
-end

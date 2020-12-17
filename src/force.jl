@@ -1,5 +1,5 @@
 function mark_and_apply_force!(f::Fluid, s::Structure)
-    cell_2_ids, cell_2_xs = find_cell_2!(f, fetch_poly(s))
+    cell_2_ids, cell_2_xs = mark_and_find_cell_2!(f, fetch_poly(s))
     force_of_pressure_to_solid!(f, s, cell_2_ids, cell_2_xs)
 end
 

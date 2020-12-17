@@ -16,12 +16,13 @@ println("Modules were loaded successfully.")
 # --------------------------------
 # define fluids
 # --------------------------------
-f = Fluid(realdim = 2, 
-            point1 = [-1e-3, 0, 0], 
-            point2 = [3e-3, 2e-3, 0], 
-            nmesh = Int[4*10, 2*10, 1], 
-            ng = 2, 
-            dist = [nworkers(), 1, 1])  
+f = Fluid(
+    realdim = 2, 
+    point1 = [-10e-3, 0, 0], 
+    point2 = [50e-3, 65e-3, 0], 
+    nmesh = Int[2*60, 2*65, 1], 
+    ng = 2
+)  
 f.para["gamma"] = 1.4
 f.para["viscosity"] = false
 f.para["flux scheme"] = "LF" # "AUSM" or "LF"
@@ -31,7 +32,7 @@ fill_fluid!(f, rho0, u0, p0)
 
 rho2, p2, u2 = after_shock(p0, rho0, u0[1], 1.21, f.para["gamma"], 1)
 
-# fill_fluid!(f, [-1e-3, 0., 0.], [0., 2e-3, 0.], rho2, [u2, 0., 0.], p2)
+fill_fluid!(f, [-10e-3, 0., 0.], [0., 65e-3, 0.], rho2, [u2, 0., 0.], p2)
 
 set_bounds!(f, ["free", "refl"], ["refl", "refl"])
 
@@ -40,7 +41,7 @@ set_bounds!(f, ["free", "refl"], ["refl", "refl"])
 # --------------------------------
 
 # read model
-s = read_model("Quad4", "pstrain", "in/plate_1x1.msh", "in/steel.para")
+s = read_model("Quad4", "pstrain", "in/plate_2x50.msh", "in/PMMA_molded.para")
 
 # constrain
 cons_dof_in_box!(s, [-1,-1e-7], [1,1e-7])
@@ -67,34 +68,31 @@ println(frame,"  ", Dates.now(), "  ", 0)
 println("mass = ", PreCoIBM.check_mass!(m.imf.f))
 
 save_time(frame, time, "out/time")
-save_to_vtk(m.imf.f, ["rho", "e", "p", "mark"], [:rho, :e, :p, :mark], "out/fluid_"*string(N+frame))
+save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
 save_fluid_mesh(m.imf.f, "out/fluid_mesh")
-# save_to_fig(m.imf.f, dataname = "rho", frame = frame, figpath = "outputfig/", levels = [0,2,10])
 
-while frame < 20 && time < 0.02
+while frame < 1000000 && time < 0.02
     global frame, time
+
     dt = coupled_time_step!(m.imf.f, m.ims.s, CFL = 0.3)
 
-    
-
-    # dtf = PreCoIBM.FVM.time_step!(m.f, CFL = 0.3)
-    # dtc = PreCoIBM.time_step!(m.f, m.ims.s)
-    # println(dtf, "   ",dtc)
     # println("-- coupled_advance: 1 --")
     # @time 
     coupled_advance!(m, dt)
-    
+    # seperate_advance!(m, dt)
     
     println("mass = ", PreCoIBM.check_mass!(m.imf.f))
 
-
     frame += 1
     time += dt
-    if frame%1 == 0
+
+    if frame%20 == 0
         save_time(frame, time, "out/time")
-        save_to_vtk(m.imf.f, ["rho", "e", "p", "mark"], [:rho, :e, :p, :mark], "out/fluid_"*string(N+frame))
+
+        save_to_vtk(m.imf.f, ["rho"], [:rho], "out/fluid_"*string(N+frame))
+
         # save_to_vtk(m.ims.s, ["x0", "d"], [:x0, :d], "out/structure_"*string(N+frame))
-        # save_to_fig(m.imf.f, dataname = "rho", frame = ceil(Int,frame/cut), figpath = "outputfig/", levels = [0,2,10])
+        
         println(frame,"  ", Dates.now(), "  ", dt)
     end
 end

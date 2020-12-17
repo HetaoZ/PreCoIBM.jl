@@ -5,7 +5,6 @@ module PreCoIBM
 # -------------------------------------------------
 using Distributed
 using DelimitedFiles
-using DistributedArrays
 using Printf
 using LinearAlgebra
 using Statistics
@@ -50,7 +49,8 @@ structure_advance!(s::RigidStructure, dt) = Rigid.advance!(s, dt, "explicit")
 
 fluid_advance!(f::Fluid, dt) = FVM.advance!(f, dt)
 copy_fluid!(f::Fluid) = FVM.copy_fluid!(f)
-
+check_mass!(f::Fluid) = FVM.check_mass!(f)
+export check_mass!
 # -------------------------------------------------
 # constants
 const ITER_SCHEME = "GS" # "J", "GS"
@@ -77,7 +77,6 @@ include("solver.jl")
 export coupled_advance!, coupled_time_step!, seperate_advance!
 include("utils.jl")
 include("force.jl")
-# include("exclude.jl")
 include("mark.jl")
 include("transport.jl")
 include("io_post.jl")
