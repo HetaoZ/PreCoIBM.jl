@@ -11,7 +11,7 @@ function clear_fluid!(f, impoly)
     xs = fetch_poly_x(impoly, f.realdim) 
     imin, imax = get_region!(f, xs, extra_width = 1)
 
-    for id in CartesianIndices(f.rho)
+    @sync @distributed for id in CartesianIndices(f.rho)
         i, j, k = id[1], id[2], id[3]
         if pinpoly(xs, [f.x[i], f.y[j], f.z[k]][1:f.realdim]) == 1
             f.rho[id] = 0.

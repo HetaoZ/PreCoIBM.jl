@@ -4,12 +4,12 @@ println(Dates.now())
 
 println("Opened ", nworkers()," process(es) of PID ", workers())
 
-try 
-    @everywhere using .PreCoIBM
-catch
-    @everywhere include("src/PreCoIBM.jl")
-    @everywhere using .PreCoIBM
-end
+# try 
+    @everywhere using PreCoIBM
+# catch
+#     @everywhere include("src/PreCoIBM.jl")
+#     @everywhere using .PreCoIBM
+# end
 
 println("Modules were loaded successfully.")
 

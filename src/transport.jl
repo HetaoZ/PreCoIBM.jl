@@ -12,7 +12,7 @@ transport_fluid!(f, impoly) = remap_to_fluid!(f, generate_particles!(f), impoly)
 function generate_particles!(f::Fluid)
     particles = ImParticle[]
 
-    for id in CartesianIndices(f.rho)
+    @sync @distributed for id in CartesianIndices(f.rho)
         i, j, k = id[1], id[2], id[3]
         if MK.between([f.x[i], f.y[j], f.z[k]][1:f.realdim], f.point1[1:f.realdim], f.point2[1:f.realdim]) && f.mark[id] == 0 #&& f.rho[id] > 1.e-14
 
@@ -83,7 +83,7 @@ function remap_to_fluid!(f, particles, impoly)
     V = prod(f.d[1:f.realdim])
     h = maximum(f.d[1:f.realdim])
 
-    for particle in particles
+    @sync @distributed for particle in particles
         
         ub, n = get_convex_speed_and_n!(particle.x + particle.dx, impoly, f.point1, f.point2)
 
@@ -140,14 +140,14 @@ function remap_particle_to_cell!(particle::ImParticle, rho, u, e, p, w, para::Di
 
     w = FVM.status_to_w(rho, u, e)
 
-    if abs(w[2]) > 1e3
-        println("rho = ", rho)
-        println("u = ", u)
-        println("e = ", e)
-        println("p = ", p)
-        println("w = ", w)
-        exit()
-    end
+    # if abs(w[2]) > 1e3
+    #     println("rho = ", rho)
+    #     println("u = ", u)
+    #     println("e = ", e)
+    #     println("p = ", p)
+    #     println("w = ", w)
+    #     exit()
+    # end
 
     return rho, u, e, p, w
 end
