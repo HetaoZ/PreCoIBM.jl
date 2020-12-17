@@ -10,10 +10,12 @@ end
 transport_fluid!(f, impoly) = remap_to_fluid!(f, generate_particles!(f), impoly)
 
 function generate_particles!(f::Fluid)
-    particles = ImParticle[]
+    particles = @sync @distributed (append!) for id in CartesianIndices(f.rho)
+        
+        particles = ImParticle[]
 
-    @sync @distributed for id in CartesianIndices(f.rho)
         i, j, k = id[1], id[2], id[3]
+
         if MK.between([f.x[i], f.y[j], f.z[k]][1:f.realdim], f.point1[1:f.realdim], f.point2[1:f.realdim]) && f.mark[id] == 0 #&& f.rho[id] > 1.e-14
 
             target_id = f.target_id[:,id]
@@ -38,6 +40,8 @@ function generate_particles!(f::Fluid)
             f.p[id] = 0.
             f.w[:,id] = zeros(Float64,5)
         end
+
+        particles
     end
 
     println("num of particles = ", length(particles))
